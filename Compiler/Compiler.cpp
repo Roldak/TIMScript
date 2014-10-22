@@ -171,7 +171,7 @@ namespace ts{
             for (size_t i=0; i<code.size(); ++i)
                 copy[i]=code[i];
 
-            return new Procedure(25, _currentFunctionLocalVariables.size(), copy, code.size(), NULL, NULL, name);
+            return new Procedure(25, _currentFunctionLocalVariables.size(), copy, code.size(), NULL, NULL, NULL, name);
         }
 
         std::string Compiler::getWorkingDirectory(std::string path){
@@ -699,6 +699,7 @@ namespace ts{
             clss->setDefs(_currentScope->getDefs());
             clss->typeClass()->setClassDefIndex(_defNumber);
             classDef->setIndex(_defNumber++); // set the definition index of the class to the right one
+            clss->setDebugInfoNodeIndex(createCurrentClassDebugInfoNode(clss));
 
             endScope();
 
@@ -1467,7 +1468,13 @@ namespace ts{
 
         size_t Compiler::createCurrentFunctionDebugInfoNode()
         {
-            _baseScope->setDef("|"+T_toString(_defNumber), _defNumber, NULL, new DebugInfoNode(_currentFunctionLocalVariables));
+            _baseScope->setDef("|"+T_toString(_defNumber), _defNumber, NULL, new FunctionDebugInfoNode(_currentFunctionLocalVariables));
+            return _defNumber++;
+        }
+
+        size_t Compiler::createCurrentClassDebugInfoNode(ClassNode *clss)
+        {
+            _baseScope->setDef("|"+T_toString(_defNumber), _defNumber, NULL, new ClassDebugInfoNode(clss));
             return _defNumber++;
         }
 

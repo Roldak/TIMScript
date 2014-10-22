@@ -101,7 +101,7 @@ namespace ts{
 
         // Debug instructions
 
-        MK_DBG_INFO, DBG_EOS, DBG_CALL, DBG_RET
+        MK_DBG_INFO, DBG_EOS, DBG_CALL, DBG_RET, DBG_NEW
     };
 }
 

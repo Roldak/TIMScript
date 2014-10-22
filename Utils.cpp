@@ -98,7 +98,7 @@ size_t nbOfArgs(TSINSTR instr, const TSINSTR* rest){
             
         // FUNCTIONS OPERATIONS
             
-        case MK_FUNC:   return 6;
+        case MK_FUNC:   return 7;
         case CALL_FUNC: //return 2+rest[1];
         case CALL_FUNC_R://return 2+rest[1];
         case CALL_FUNC_V:return 2+rest[1];
@@ -109,7 +109,7 @@ size_t nbOfArgs(TSINSTR instr, const TSINSTR* rest){
         // CLASS OPERATIONS
             
         case MK_CLASS:  {
-            size_t length=4;
+            size_t length=5;
             size_t refAmongAttrNb=rest[length++];
             length+=refAmongAttrNb;
             size_t nbInterfaces=rest[length++];
@@ -199,6 +199,7 @@ size_t nbOfArgs(TSINSTR instr, const TSINSTR* rest){
         case DBG_EOS:   return 1;
         case DBG_CALL:  return 1;
         case DBG_RET:   return 0;
+        case DBG_NEW:   return 0;
 
         default:
             break;

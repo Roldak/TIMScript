@@ -33,6 +33,10 @@ namespace ts{
         void reset(data_Array* roots, ExecutionContext* ctx);
         
         void setBackupGC(GarbageCollector* gc){_backup=gc;}
+
+        bool contains(TSREF ref);
+        size_t getCurrentSize();
+        size_t getMaxSize();
         
     private:
 

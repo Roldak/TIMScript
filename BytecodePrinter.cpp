@@ -194,6 +194,7 @@ namespace ts {
             case DBG_EOS:   return "dbg_eos";
             case DBG_CALL:  return "dbg_call";
             case DBG_RET:   return "dbg_ret";
+            case DBG_NEW:   return "dbg_new";
 
             default:
                 break;

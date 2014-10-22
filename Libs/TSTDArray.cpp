@@ -83,7 +83,7 @@ namespace ts {
 
                 std::vector<TSDATA> funcArgs(1);
 
-                for (size_t i=0; i<length; ++i){
+                for (TSINT i=0; i<length; ++i){
                     funcArgs[0]=ary[i];
                     funcCaller.call(funcArgs);
                 }
@@ -101,7 +101,7 @@ namespace ts {
 
                 std::vector<TSDATA> funcargs(1);
 
-                for (size_t i=0; i<length; ++i){
+                for (TSINT i=0; i<length; ++i){
                     funcargs[0].Int=(TSINT)i;
                     ary[i]=funcCaller.call(funcargs);
                 }
@@ -112,6 +112,7 @@ namespace ts {
             cmp.setClassData(array, "printInt", FunctionBuilder::Make([](ExecutionContext* ctx, TSDATA* args){
                 std::vector<TSDATA>* data(((objects::Array*)args[0].Ref)->vector());
                 std::cout<<"[";
+
                 for (size_t i=0, e=data->size(); i<e; ++i) {
                     std::cerr<<data->operator[](i).Int;
                     if (i!=e-1) {

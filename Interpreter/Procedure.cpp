@@ -21,6 +21,7 @@ namespace ts{
                          const size_t bytecodeLength,
                          size_t_Array** refsLoc,
                          ExceptionTable** exTable,
+                         DebugInfos** dbgInfo,
                          const std::string& name)
     
     :
@@ -29,6 +30,7 @@ namespace ts{
       _bytecode(bytecode), _bytecode_length(bytecodeLength),
       _refsLocations(refsLoc),
       _exTable(exTable),
+      _dbgInfo(dbgInfo),
       _name(name)
     {
         

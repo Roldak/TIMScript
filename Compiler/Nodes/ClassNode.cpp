@@ -40,7 +40,8 @@ namespace ts {
         }
 
         ClassNode::ClassNode(size_t pos, size_t length, const std::string& n, ClassNode* superClass)
-            : AbstractNode(pos, length), _name(n), _attrs(), _defs(), _superClass(superClass), _isAbstract(false)
+            : AbstractNode(pos, length), _name(n), _attrs(), _defs(), _superClass(superClass),
+              _debugInfoIndex(std::string::npos), _isAbstract(false)
         {
             _cachedType=type::BasicType::Class;
             _classType=new type::ClassType(this);
@@ -172,6 +173,10 @@ namespace ts {
             program.push_back(MK_CLASS);
             program.push_back(_attrs.size());
             program.push_back(_defs.size());
+
+            // pass the definition index of the class debug info
+
+            program.push_back(_debugInfoIndex);
 
             // pass the definition index of the superclass if any, otherwise max_size_t
 

@@ -48,6 +48,8 @@ namespace ts {
             void extends(ClassNode* clss);
             inline const ClassNode* superClass() const{return _superClass;}
 
+            inline void setDebugInfoNodeIndex(size_t index) { _debugInfoIndex=index; }
+
             void addInterface(InterfaceNode* interface);
             inline const std::vector<InterfaceNode*>& getInterfaces() const{return _interfaces;}
             
@@ -66,6 +68,8 @@ namespace ts {
             std::vector<Argument*> _attrs;
             std::vector<DefinitionReferenceNode*> _defs;
             ClassNode* _superClass;
+
+            size_t _debugInfoIndex;
 
             std::vector<InterfaceNode*> _interfaces;
             std::vector<std::vector<size_t>> _interfacesMap;

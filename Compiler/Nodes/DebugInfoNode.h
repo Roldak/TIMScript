@@ -19,12 +19,12 @@ namespace ts {
     }
     
     namespace nodes{
-        
-        class DebugInfoNode : public AbstractNode{
+
+        class FunctionDebugInfoNode : public AbstractNode{
         public:
             
-            DebugInfoNode(const std::vector<std::pair<std::string, cmplr::Variable*>>& vars);
-            virtual ~DebugInfoNode() {}
+            FunctionDebugInfoNode(const std::vector<std::pair<std::string, cmplr::Variable*>>& vars);
+            virtual ~FunctionDebugInfoNode() {}
             
             virtual void semanticTraverse();
             
@@ -37,6 +37,23 @@ namespace ts {
             
         };
         
+
+        class ClassDebugInfoNode : public AbstractNode{
+        public:
+
+            ClassDebugInfoNode(nodes::ClassNode* clss);
+            virtual ~ClassDebugInfoNode() {}
+
+            virtual void semanticTraverse();
+
+            virtual void pushBytecode(std::vector<TSINSTR>& program);
+            virtual std::string toString();
+
+        private:
+
+            nodes::ClassNode* _class;
+
+        };
     }
 }
 

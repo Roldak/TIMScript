@@ -14,6 +14,7 @@
 #include "ConstNodes.h"
 #include "CastUtils.h"
 #include "CompilationExceptions.h"
+#include "CompilationContext.h"
 
 namespace ts {
     namespace nodes{
@@ -35,6 +36,9 @@ namespace ts {
             program.push_back(LOAD_CST);
             program.push_back(_class->typeClass()->getClassDefIndex());
             program.push_back(_scoped ? NEW_SCOPED : NEW);
+
+            if(cmplr::CompilationContext::inDebugMode())
+                program.push_back(DBG_NEW);
         }
         
         std::string MakeObject::toString(){

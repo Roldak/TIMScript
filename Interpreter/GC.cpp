@@ -38,6 +38,28 @@ namespace ts{
         _roots=roots;
         _ctx=ctx;
     }
+
+    bool GarbageCollector::contains(TSREF ref){
+        for(size_t i=0; i<_items.size(); ++i){
+            if(ref==_items[i])
+                return true;
+        }
+
+        for(size_t i=0; i<_temporaries.size(); ++i){
+            if(ref==_temporaries[i])
+                return true;
+        }
+
+        return false;
+    }
+
+    size_t GarbageCollector::getCurrentSize(){
+        return _currentSize;
+    }
+
+    size_t GarbageCollector::getMaxSize(){
+        return _maxSize;
+    }
     
     void GarbageCollector::trace(objects::Object* item){
  

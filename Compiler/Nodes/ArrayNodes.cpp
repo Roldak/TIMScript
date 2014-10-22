@@ -9,6 +9,7 @@
 #include "ArrayNodes.h"
 #include "CastNode.h"
 #include "CompilationExceptions.h"
+#include "CompilationContext.h"
 
 namespace ts{
     namespace nodes{
@@ -30,6 +31,10 @@ namespace ts{
             }
             program.push_back(NEW_ARRAY);
             program.push_back(!type::BasicType::isBasicType(((type::ArrayType*)_cachedType)->elementsType()));
+
+            if(cmplr::CompilationContext::inDebugMode()){
+                program.push_back(DBG_NEW);
+            }
         }
         
         std::string NewArrayNode::toString(){
@@ -58,6 +63,10 @@ namespace ts{
             program.push_back(MK_ARRAY);
             program.push_back(_nodes.size());
             program.push_back(!type::BasicType::isBasicType(_arytype->elementsType()));
+
+            if(cmplr::CompilationContext::inDebugMode()){
+                program.push_back(DBG_NEW);
+            }
         }
         
         std::string MakeArrayNode::toString(){

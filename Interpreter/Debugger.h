@@ -24,6 +24,7 @@ namespace ts{
         virtual void updateDebuggingInfo(size_t pos, TSDATA* locals, size_t localsCount) = 0;
         virtual void functionCalled(const std::string& funcName, void* address) = 0;
         virtual void functionReturned() = 0;
+        virtual void dynAllocation() = 0;
         virtual void readMessage() = 0;
 
     protected:

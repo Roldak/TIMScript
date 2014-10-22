@@ -12,8 +12,9 @@
 #include <iostream>
 #include "Utils.h"
 #include "ExceptionTable.h"
+#include "DebugInfos.h"
 
-/* contains the bytecode of a function, as well as the estimated stack size and 
+/* contains the bytecode of a function, as well as the estimated stack size and
  the number of local variable of the function. */
 
 namespace ts{
@@ -28,6 +29,7 @@ namespace ts{
                   const size_t bytecodeLength,
                   size_t_Array** refsLoc,
                   ExceptionTable** exTable,
+                  DebugInfos** dbgInfo,
                   const std::string& name);
         
         ~Procedure(){/*delete[] _bytecode;*/}
@@ -43,6 +45,9 @@ namespace ts{
         inline void setExTable(ExceptionTable** exTable){_exTable=exTable;}
         inline ExceptionTable* getExTable() const{return *_exTable;}
 
+        inline void setDebugInfos(DebugInfos** dbgInfo){_dbgInfo=dbgInfo;}
+        inline DebugInfos* getDebugInfos() const{return _dbgInfo == NULL ? NULL : *_dbgInfo;}
+
         inline const std::string& name() const{return _name;}
         
     private:
@@ -52,6 +57,7 @@ namespace ts{
         const size_t _bytecode_length;
         size_t_Array** _refsLocations;
         ExceptionTable** _exTable;
+        DebugInfos** _dbgInfo;
         const std::string _name;
     };
 

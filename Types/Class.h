@@ -13,13 +13,15 @@
 #include <vector>
 #include "Utils.h"
 #include "Object.h"
+#include "DebugInfos.h"
 
 namespace ts{
     namespace objects{
         
         class Class : public Object{
         public:
-            Class(size_t nb, Class** superClass, TSDATA* vt, TSDATA** it, std::vector<size_t> vec, size_t destr, const std::string& name);
+            Class(size_t nb, Class** superClass, TSDATA* vt, TSDATA** it,
+                  std::vector<size_t> vec, size_t destr, DebugInfos** infos, const std::string& name);
             virtual ~Class(){delete _vtable;}
             
             inline size_t numberOfAttributes(){return _attrNumber;}
@@ -33,6 +35,8 @@ namespace ts{
             
             inline const std::string& name(){return _name;}
             inline Class* superClass(){return _superClass ? *_superClass : NULL;}
+
+            inline DebugInfos* getDebugInfos(){return _debugInfos ? *_debugInfos : NULL;}
 
             // GC
             
@@ -48,6 +52,8 @@ namespace ts{
             TSDATA** _itable;
             std::vector<size_t> _refsAmongAttrs;
             size_t _destrIndex;
+
+            DebugInfos** _debugInfos;
 
             const std::string _name;
 

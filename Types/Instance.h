@@ -25,6 +25,7 @@ namespace ts{
                 _class->deleteInstance(this, ctx);
             }
             
+            inline TSDATA* attrs(){return _attrs;}
             inline TSDATA getAttr(size_t index){return _attrs[index];}
             inline void setAttr(size_t index, TSDATA data){_attrs[index]=data;}
             

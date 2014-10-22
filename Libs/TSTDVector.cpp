@@ -84,7 +84,7 @@ namespace ts {
 
             cmp.setClassData(vectorClass, "remove", FunctionBuilder::Make([](ExecutionContext* ctx, TSDATA* args){
                 std::vector<TSDATA>* vec=((objects::Array*)args[0].Instance->getAttr(0).Ref)->vector();
-                int i=0;
+                size_t i=0;
                 for(; i<vec->size(); ++i){
                     if(vec->operator [](i).Ref==args[1].Ref)
                         break;

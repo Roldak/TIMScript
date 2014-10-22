@@ -26,7 +26,7 @@ namespace ts {
             cmp.setClassData(object, "_==_", FunctionBuilder::Make([](ExecutionContext* ctx, TSDATA *args){
                 return TSDATA{.Int=(args[0].Ref==args[1].Ref)};
             }, "(Object, Object)->bool"));
-            
+
             cmp.setClassData(object, "toString", FunctionBuilder::Make([stringIndex](ExecutionContext* ctx, TSDATA* args){
                 TSDATA str=ctx->newInstance(stringIndex);
                 str.Instance->setAttr(0, TSDATA{.Ref=new std::string("<"+ args[0].Instance->getClass()->name() +" at "+T_toString(args[0].Ref)+">")});

@@ -278,7 +278,7 @@ namespace ts{
 
             // Debug Instructions
 
-            &&MK_DBG_INFO, &&DBG_EOS, &&DBG_CALL, &&DBG_RET
+            &&MK_DBG_INFO, &&DBG_EOS, &&DBG_CALL, &&DBG_RET, &&DBG_NEW
         };
 
         while (true) {
@@ -555,6 +555,7 @@ namespace ts{
                 size_t nb_captures=p[++ip];
                 size_t ref_map_index=p[++ip];
                 size_t ex_table_index=p[++ip];
+                size_t dbg_infos_index=p[++ip];
                 size_t toIgnore=p[++ip];
 
                 std::vector<TSDATA> captures(nb_captures);
@@ -567,6 +568,7 @@ namespace ts{
                                                                 p+ip+1, toIgnore,
                                                                 (size_t_Array**)cPool+ref_map_index,
                                                                 (ExceptionTable**)cPool+ex_table_index,
+                                                                dbg_infos_index==std::string::npos ? NULL : (DebugInfos**)cPool+dbg_infos_index,
                                                                 proc->name()));
 
                 ip+=toIgnore+1;
@@ -731,6 +733,7 @@ namespace ts{
             {
                 size_t nb_attrs=p[++ip];
                 size_t nb_defs=p[++ip];
+                size_t debugInfo_defindex=p[++ip];
                 size_t superclass_defindex=p[++ip];
                 size_t destructorIndex=p[++ip];
                 size_t nb_refs=p[++ip];
@@ -743,6 +746,7 @@ namespace ts{
                 for (size_t i=0; i<nb_refs; ++i)
                     refs[i]=p[++ip];
 
+                DebugInfos** debugInfoPtr=(debugInfo_defindex==std::string::npos ? NULL : (DebugInfos**)cPool+debugInfo_defindex);
                 objects::Class** superClassPtr=(superclass_defindex==std::string::npos ? NULL : (objects::Class**)cPool+superclass_defindex);
 
                 size_t nbInterface=p[++ip];
@@ -781,7 +785,7 @@ namespace ts{
                     }
                 }
 
-                stack[sp++].Ref=new objects::Class(nb_attrs, superClassPtr, defs, realItable, refs, destructorIndex, proc->name());
+                stack[sp++].Ref=new objects::Class(nb_attrs, superClassPtr, defs, realItable, refs, destructorIndex, debugInfoPtr, proc->name());
 
             }
             goto INC_NEXT_INSTR;
@@ -1139,10 +1143,12 @@ namespace ts{
             ///////////////////////////////////////
 
         MK_DBG_INFO:
-            std::vector<std::string*> vars(p[++ip]);
+            VarDeclTable vars(p[++ip]);
 
             for(size_t i=0; i<vars.size(); ++i){
-                vars[vars.size()-i-1]=(std::string*)stack[--sp].Ref;
+                vars[vars.size()-i-1].type=(DEBUG_TYPE)stack[--sp].Int;
+                vars[vars.size()-i-1].name=(std::string*)stack[--sp].Ref;
+                vars[vars.size()-i-1].index=(size_t)stack[--sp].Int;
             }
 
             stack[sp++].Ref=new DebugInfos(vars);
@@ -1177,6 +1183,12 @@ namespace ts{
                 Debugger->functionReturned();
             }
 
+            goto INC_NEXT_INSTR;
+
+        DBG_NEW:
+            if(Debugger){
+                Debugger->dynAllocation();
+            }
             goto INC_NEXT_INSTR;
         }
 

@@ -14,8 +14,9 @@
 namespace ts{
     namespace objects{
         
-        Class::Class(size_t nb, Class** superClass, TSDATA* vt, TSDATA **it, std::vector<size_t> vec, size_t destr, const std::string& name)
-            : _attrNumber(nb), _vtable(vt), _itable(it), _refsAmongAttrs(vec), _destrIndex(destr), _superClass(superClass), _name(name)
+        Class::Class(size_t nb, Class** superClass, TSDATA* vt, TSDATA **it, std::vector<size_t> vec, size_t destr, DebugInfos **infos, const std::string& name)
+            : _attrNumber(nb), _vtable(vt), _itable(it), _refsAmongAttrs(vec),
+              _destrIndex(destr), _debugInfos(infos), _superClass(superClass), _name(name)
         {
         }
         

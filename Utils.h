@@ -11,8 +11,6 @@
 
 #include <sstream>
 
-#define NB_BYTES_DATA sizeof(TSDATA)
-#define MAX_RECURSION_DEPTH 1000
 #define GC_INITIAL_MAXSIZE 1024
 #define INITIAL_STACK_SIZE 10000
 #define INITIAL_LOCALS_SIZE 10000
@@ -113,5 +111,7 @@ struct T_Array{
 
 typedef T_Array<size_t> size_t_Array;
 typedef T_Array<TSDATA> data_Array;
+
+enum DEBUG_TYPE{T_BOOL=0, T_INT, T_REAL, T_REF};
 
 #endif

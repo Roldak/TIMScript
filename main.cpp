@@ -6,28 +6,6 @@
 //  Copyright (c) 2014 Romain Beguet. All rights reserved.
 //
 
-#include <iostream>
-#include <fstream>
-
-#include "Compiler.h"
-#include "Bytecode.h"
-#include "Interpreter.h"
-#include "BytecodePrinter.h"
-#include "FunctionBuilder.h"
-#include "Instance.h"
-#include "ClassNode.h"
-#include "InterfaceNode.h"
-#include "DefinitionReferenceNode.h"
-#include "CompilationExceptions.h"
-#include <cmath>
-#include "Array.h"
-
-#include "TSTD.h"
-
-
-using namespace ts;
-using namespace std;
-
 /*
  TODO:
 -DONE. [->>>> fix the GC !! <<<<-]
@@ -64,82 +42,46 @@ using namespace std;
     -null
     -default values in functions
     -add special operator ('!' ?) which can be used in a function signature to express the requirement of a non null reference for the designated argument.
+    -create an convenient interface for the library (1 header + lib file), to compile, run, debug TS programs from C++.
  */
 /*
-class TIPCDebugger : public AbstractDebugger{
-public:
+#include "TSEngine.h"
 
-    TIPCDebugger(size_t port) {}
+int main(){
 
-    virtual void waitForResponse(){
+    ts::Engine tseng;
 
-    }
+    std::cerr<<tseng.run("begin{ print 1}").Int<<std::endl;
 
-private:
+    ts::Compiler* cmp = tseng.newCompiler();
 
-};
-*/
+    cmp->compile("class Test[ x: int ] extends Object { new()=>{ x = 2 } }");
+    cmp->compile("class Hihi[]{ def static lala()=>{ print new Test() } }");
+    cmp->compile("begin{ Hihi.lala(); STest.ok() }");
+    cmp->import("test.tsf");
 
-/*
-int main(int argc, const char * argv[])
-{   
-    // LOAD FILE
+    ts::Class* Clss     = cmp->newClass("SpecialVector", {"x:int", "y:int", "o:Test"}, "Object");
+    ts::Class* String   = cmp->getClass("String");
+    ts::Class* Object   = cmp->getClass("Object");
+    ts::Class* Test     = cmp->getClass("Test");
 
-    string fileName;
-
-    if (argc>1)
-        fileName=argv[1];
-    else    
-        fileName="source.tsf";
-
-    ifstream file(fileName.c_str());
-    string content;
-
-    while (file.good())
-        content+=file.get();
-    
-    file.close();
-
-    // COMPILATION
-
-    clock_t comp=clock();
-
-    cmplr::Compiler cmp(argv[0], true);
-
-    Program* program;
-
-    try{
-        tstd::importSTD(cmp);
-        program=cmp.compile(content);
-    }catch(ts::exception::ParsingError& ex){
-        cerr<<ex.what()<<endl;
-        return 0;
-    }
-
-    if(argc>2) return 0;
-
-#ifdef DEBUG
-    cerr<<endl<<"bytecode : "<<endl<<BytecodePrinter::translate(program->main())<<endl<<endl<<"output : "<<endl;
-#endif
+    ts::Method* objToString = object->method("toString");
 
 
-    Interpreter itp(program);
-    ExecutionContext* ctx=itp.createExecutionContext();
 
-    cout<<endl<<"Compilation Time : "<<(clock()-comp)/(double)CLOCKS_PER_SEC<<endl;
-    cout<<"-----Starting Program------"<<endl<<endl;
-    
-    clock_t exec=clock();
-    
-    Interpreter::exec<true>(ctx, program->main());
-    
-    cout<<endl<<endl<<"------Ending Program------"<<endl;
-    cout<<"Execution Time : "<<(clock()-exec)/(double)CLOCKS_PER_SEC<<endl<<endl;
+    ts::Function* constr = clss->newConstructor([Clss, Test](Execution* ctx, TSDATA* args){
+        ts::objects::Instance* self = args[0];
+        self->setAttr(0, 0);
+        self->setAttr(1, 1);
+        self->setAttr(2, ctx->instantiate(Test, ));
+        return self;
+    });
 
-#ifdef _WIN32
-    //system("pause");
-#endif
+    ts::Function* specVecConstr = clss->newConstructor([String, objToString](ExecutionContext* ctx, TSDATA* args){
+        TSDATA myString = ctx->newString(string, "");
+        ctx->
+    });
 
-    return 0;
+
 }
 */

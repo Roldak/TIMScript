@@ -15,16 +15,24 @@
 
 namespace ts{
 
+    struct DebugVar{
+        size_t index;
+        std::string* name;
+        DEBUG_TYPE type;
+    };
+
+    typedef std::vector<DebugVar> VarDeclTable;
+
     class DebugInfos{
     public:
 
-        DebugInfos(const std::vector<std::string*>& varNames) : _varNames(varNames) {}
+        DebugInfos(const VarDeclTable& varDecls) : _vars(varDecls) {}
 
-
+        inline const VarDeclTable& getVars(){return _vars;}
 
     private:
 
-        const std::vector<std::string*> _varNames;
+        const VarDeclTable _vars;
 
     };
 }

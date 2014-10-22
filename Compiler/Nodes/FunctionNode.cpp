@@ -75,6 +75,7 @@ namespace ts {
             program.push_back(captureCount);
             program.push_back(_refMapTupleIndex);
             program.push_back(_exTableIndex);
+            program.push_back(_dbgInfoIndex);
             size_t pos=program.size();
             program.push_back(0);
             

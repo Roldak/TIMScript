@@ -123,6 +123,7 @@ namespace ts{
             size_t createCurrentFunctionRefMapTupleNode();
             size_t createCurrentFunctionExTableNode();
             size_t createCurrentFunctionDebugInfoNode();
+            size_t createCurrentClassDebugInfoNode(nodes::ClassNode* clss);
             size_t createTupleTypeRefMapTupleNode(const std::vector<type::Type*>& tuple);
             
             cmplr::Variable* makeStructVar(const std::string& name, type::StructType* t);
