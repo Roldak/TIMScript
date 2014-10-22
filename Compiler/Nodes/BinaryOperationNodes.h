@@ -97,7 +97,7 @@ namespace ts{
             
             virtual ~IndexAccessOperation(){
                 delete _accessed;
-                delete _index;
+                //delete _index;
             }
             
             virtual void semanticTraverse();

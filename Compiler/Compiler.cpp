@@ -941,8 +941,9 @@ namespace ts{
                 if (IS(TK_OPERATOR) && _currentClass) {
                     Operator* op=CAST(Operator);
                     name="_"+op->toString()+"_";
+                    OPERATOR_TYPE opType = op->opType();
                     accept();
-                    if(op->opType()==OPERATOR_TYPE::BRACKET_O){
+                    if(opType==OPERATOR_TYPE::BRACKET_O){
                         if(!accept(BRACKET_C)){
                             ERROR("Expected ']'")
                         }

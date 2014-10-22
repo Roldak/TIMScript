@@ -17,7 +17,7 @@
 
 namespace ts{
     namespace tools{
-        
+
         class FunctionBuilder{
         public:
 
@@ -33,6 +33,16 @@ namespace ts{
             template<typename T>
             static UserDataInfo Native(const std::function<T>& func){
                 return Function(func);
+            }
+
+            template<typename T, typename... Args>
+            static UserDataInfo Constructor(){
+                return Function((std::function<T*(Args...)>)_constructor<T, Args...>);
+            }
+
+            template<typename T>
+            static UserDataInfo Destructor(){
+                return Function((std::function<void(T*)>)_destructor<T>);
             }
 
         private:
@@ -182,8 +192,17 @@ namespace ts{
             static TSDATA toTSDATA(T x){
                 return TSDATA{.Ref = x};
             }
+
+            template<typename T, typename... Args>
+            static T* _constructor(Args... args){
+                return new T(args...);
+            }
+
+            template<typename T>
+            static void _destructor(T* obj){
+                delete obj;
+            }
         };
-        
     }
 }
 
