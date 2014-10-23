@@ -14,10 +14,10 @@
 #include "Instance.h"
 
 namespace ts {
-    namespace tstd{
-        
-        void importIterable(cmplr::Compiler& cmp);
-    }
+	namespace tstd {
+
+		void importIterable(cmplr::Compiler& cmp);
+	}
 }
 
 

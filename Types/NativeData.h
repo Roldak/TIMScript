@@ -16,33 +16,39 @@
 #include "ClassNode.h"
 
 namespace ts {
-    struct ExecutionContext;
+	struct ExecutionContext;
 
-    namespace objects{
+	namespace objects {
 
-        class NativeData : public Object{
-        public:
+		class NativeData : public Object {
+		public:
 
-        };
+		};
 
-        class NativeFunction : public NativeData{
-        public:
-            NativeFunction() {}
-            NativeFunction(const std::function<TSDATA(ExecutionContext*, TSDATA*)>& func) : _funcPtr(func){}
+		class NativeFunction : public NativeData {
+		public:
+			NativeFunction() {}
+			NativeFunction(const std::function<TSDATA(ExecutionContext*, TSDATA*)>& func) : _funcPtr(func) {}
 
-            void setFunction(const std::function<TSDATA(ExecutionContext*, TSDATA*)>& func){_funcPtr=func;}
+			void setFunction(const std::function<TSDATA(ExecutionContext*, TSDATA*)>& func) {
+				_funcPtr = func;
+			}
 
-            inline TSDATA call(ExecutionContext* ctx, TSDATA* argv) const{return _funcPtr(ctx, argv);}
+			inline TSDATA call(ExecutionContext* ctx, TSDATA* argv) const {
+				return _funcPtr(ctx, argv);
+			}
 
-            virtual void gcPushRefs(std::vector<Object*>& objs){}
-            virtual const size_t size(){return sizeof(NativeFunction);}
+			virtual void gcPushRefs(std::vector<Object*>& objs) {}
+			virtual const size_t size() {
+				return sizeof(NativeFunction);
+			}
 
-        private:
+		private:
 
-            std::function<TSDATA(ExecutionContext*, TSDATA*)> _funcPtr;
-        };
+			std::function<TSDATA(ExecutionContext*, TSDATA*)> _funcPtr;
+		};
 
-    }
+	}
 }
 
 #endif /* defined(__TIMScript__NativeData__) */

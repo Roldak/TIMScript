@@ -8,7 +8,7 @@
 
 #include "DebugInfos.h"
 
-namespace ts{
+namespace ts {
 
 
 }

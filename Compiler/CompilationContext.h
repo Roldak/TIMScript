@@ -14,23 +14,32 @@
 
 namespace ts {
 
-    namespace cmplr{
+	namespace cmplr {
 
-        class CompilationContext{
-        public:
+		class CompilationContext {
+		public:
 
-            static void enable(Compiler* compiler){ if(!cmp) cmp=compiler; }
-            static void disable(){ cmp=NULL; }
+			static void enable(Compiler* compiler) {
+				if (!cmp) cmp = compiler;
+			}
+			static void disable() {
+				cmp = NULL;
+			}
 
-            static const Compiler* getCompiler() { return cmp; }
+			static const Compiler* getCompiler() {
+				return cmp;
+			}
 
-            static bool inDebugMode() { if(cmp) return cmp->inDebugMode(); else return false; }
+			static bool inDebugMode() {
+				if (cmp) return cmp->inDebugMode();
+				else return false;
+			}
 
-        private:
-            static Compiler* cmp;
-        };
+		private:
+			static Compiler* cmp;
+		};
 
-    }
+	}
 }
 
 #endif /* defined(__TIMScript__CompilationContext__) */

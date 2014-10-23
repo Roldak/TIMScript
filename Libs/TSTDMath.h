@@ -21,11 +21,11 @@
 #endif
 
 namespace ts {
-    namespace tstd{
-        
-        void importMath(cmplr::Compiler& cmp);
-        
-    }
+	namespace tstd {
+
+		void importMath(cmplr::Compiler& cmp);
+
+	}
 }
 
 #endif /* defined(__TIMScript__TSTDMath__) */

@@ -13,23 +13,29 @@
 #include "AbstractNode.h"
 
 namespace ts {
-    namespace nodes{
-        
-        class PassNode : public AbstractNode{
-        public:
-            
-            PassNode(size_t pos, size_t length) : AbstractNode(pos, length) {}
-            virtual ~PassNode() {}
-            
-            virtual void semanticTraverse(){_cachedType=type::BasicType::Void;}
-            
-            virtual void pushBytecode(std::vector<TSINSTR>& program){}
-            virtual std::string toString(){return "pass";}
+	namespace nodes {
 
-            virtual NODE_TYPE getNodeType(){return N_PASS;}
-        };
-        
-    }
+		class PassNode : public AbstractNode {
+		public:
+
+			PassNode(size_t pos, size_t length) : AbstractNode(pos, length) {}
+			virtual ~PassNode() {}
+
+			virtual void semanticTraverse() {
+				_cachedType = type::BasicType::Void;
+			}
+
+			virtual void pushBytecode(std::vector<TSINSTR>& program) {}
+			virtual std::string toString() {
+				return "pass";
+			}
+
+			virtual NODE_TYPE getNodeType() {
+				return N_PASS;
+			}
+		};
+
+	}
 }
 
 

@@ -12,13 +12,13 @@
 #include <iostream>
 #include "TIMScript.h"
 
-namespace ts{
-    class TSEngine{
-    public:
-        
-        TSEngine(){}
+namespace ts {
+	class TSEngine {
+	public:
 
-    };
+		TSEngine() {}
+
+	};
 }
 
 #endif /* defined(__TIMScript__TSEngine__) */

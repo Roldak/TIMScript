@@ -13,48 +13,48 @@
 #include "AbstractNode.h"
 
 namespace ts {
-    
-    namespace cmplr{
-        class Variable;
-    }
-    
-    namespace nodes{
 
-        class FunctionDebugInfoNode : public AbstractNode{
-        public:
-            
-            FunctionDebugInfoNode(const std::vector<std::pair<std::string, cmplr::Variable*>>& vars);
-            virtual ~FunctionDebugInfoNode() {}
-            
-            virtual void semanticTraverse();
-            
-            virtual void pushBytecode(std::vector<TSINSTR>& program);
-            virtual std::string toString();
-            
-        private:
-            
-            const std::vector<std::pair<std::string, cmplr::Variable*>> _vars;
-            
-        };
-        
+	namespace cmplr {
+		class Variable;
+	}
 
-        class ClassDebugInfoNode : public AbstractNode{
-        public:
+	namespace nodes {
 
-            ClassDebugInfoNode(nodes::ClassNode* clss);
-            virtual ~ClassDebugInfoNode() {}
+		class FunctionDebugInfoNode : public AbstractNode {
+		public:
 
-            virtual void semanticTraverse();
+			FunctionDebugInfoNode(const std::vector<std::pair<std::string, cmplr::Variable*>>& vars);
+			virtual ~FunctionDebugInfoNode() {}
 
-            virtual void pushBytecode(std::vector<TSINSTR>& program);
-            virtual std::string toString();
+			virtual void semanticTraverse();
 
-        private:
+			virtual void pushBytecode(std::vector<TSINSTR>& program);
+			virtual std::string toString();
 
-            nodes::ClassNode* _class;
+		private:
 
-        };
-    }
+			const std::vector<std::pair<std::string, cmplr::Variable*>> _vars;
+
+		};
+
+
+		class ClassDebugInfoNode : public AbstractNode {
+		public:
+
+			ClassDebugInfoNode(nodes::ClassNode* clss);
+			virtual ~ClassDebugInfoNode() {}
+
+			virtual void semanticTraverse();
+
+			virtual void pushBytecode(std::vector<TSINSTR>& program);
+			virtual std::string toString();
+
+		private:
+
+			nodes::ClassNode* _class;
+
+		};
+	}
 }
 
 #endif /* defined(__TIMScript__DebugInfoNode__) */

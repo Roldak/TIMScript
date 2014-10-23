@@ -13,29 +13,29 @@
 #include "AbstractNode.h"
 
 namespace ts {
-    namespace nodes{
-        
-        class PrintNode : public AbstractNode{
-        public:
-            
-            PrintNode(size_t pos, size_t length, const std::vector<AbstractNode*>& n) : AbstractNode(pos, length), _nodes(n) {}
-            virtual ~PrintNode() {
-                for(AbstractNode* n : _nodes)
-                    delete n;
-            }
-            
-            virtual void semanticTraverse();
-            
-            virtual void pushBytecode(std::vector<TSINSTR>& program);
-            virtual std::string toString();
-            
-        private:
-            
-            std::vector<AbstractNode*> _nodes;
-            
-        };
-        
-    }
+	namespace nodes {
+
+		class PrintNode : public AbstractNode {
+		public:
+
+			PrintNode(size_t pos, size_t length, const std::vector<AbstractNode*>& n) : AbstractNode(pos, length), _nodes(n) {}
+			virtual ~PrintNode() {
+				for (AbstractNode* n : _nodes)
+					delete n;
+			}
+
+			virtual void semanticTraverse();
+
+			virtual void pushBytecode(std::vector<TSINSTR>& program);
+			virtual std::string toString();
+
+		private:
+
+			std::vector<AbstractNode*> _nodes;
+
+		};
+
+	}
 }
 
 #endif /* defined(__TIMScript__PrintNode__) */

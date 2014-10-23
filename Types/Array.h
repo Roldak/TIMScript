@@ -15,32 +15,42 @@
 #include "Utils.h"
 #include "Object.h"
 
-namespace ts{
-    namespace objects{
-        
-        class Array : public Object{
-        public:
-            Array(TSINT length, bool r);
-            virtual ~Array();
-            
-            inline TSINT length(){return (TSINT)_array.size();}
-            inline TSDATA* array(){return _array.data();}
-            inline std::vector<TSDATA>* vector(){return &_array;}
-            
-            inline bool areRefs(){return _areRefs;}
-            
-            // GC
-            
-            virtual void gcPushRefs(std::vector<Object*>& objs);
-            virtual const size_t size(){return sizeof(Array);}
+namespace ts {
+	namespace objects {
 
-        private:
-            
-            std::vector<TSDATA> _array;
-            bool _areRefs;
-        };
-        
-    }
+		class Array : public Object {
+		public:
+			Array(TSINT length, bool r);
+			virtual ~Array();
+
+			inline TSINT length() {
+				return (TSINT)_array.size();
+			}
+			inline TSDATA* array() {
+				return _array.data();
+			}
+			inline std::vector<TSDATA>* vector() {
+				return &_array;
+			}
+
+			inline bool areRefs() {
+				return _areRefs;
+			}
+
+			// GC
+
+			virtual void gcPushRefs(std::vector<Object*>& objs);
+			virtual const size_t size() {
+				return sizeof(Array);
+			}
+
+		private:
+
+			std::vector<TSDATA> _array;
+			bool _areRefs;
+		};
+
+	}
 }
 
 #endif /* defined(__TIMScript__Array__) */

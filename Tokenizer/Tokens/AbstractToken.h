@@ -12,29 +12,33 @@
 #include <iostream>
 
 namespace ts {
-    namespace tok{
-        enum TOKEN_TYPE{
-            TK_KEYWORD, TK_OPERATOR, TK_IDENTIFIER, TK_BOOLEAN, TK_INTEGER, TK_REAL, TK_STRING, TK_UNDEFINED
-        };
+	namespace tok {
+		enum TOKEN_TYPE {
+			TK_KEYWORD, TK_OPERATOR, TK_IDENTIFIER, TK_BOOLEAN, TK_INTEGER, TK_REAL, TK_STRING, TK_UNDEFINED
+		};
 
-        class AbstractToken{
-        public:
-            AbstractToken(size_t pos, size_t len) : _position(pos), _length(len) {}
-            virtual ~AbstractToken(){}
-            
-            inline size_t position(){return _position;}
-            inline size_t length(){return _length;}
-            
-            virtual TOKEN_TYPE getType()=0;
-            virtual std::string toString()=0;
-            
-            static std::string typeToString(TOKEN_TYPE t);
-            
-        private:
-            size_t _position;
-            size_t _length;
-        };
-    }
+		class AbstractToken {
+		public:
+			AbstractToken(size_t pos, size_t len) : _position(pos), _length(len) {}
+			virtual ~AbstractToken() {}
+
+			inline size_t position() {
+				return _position;
+			}
+			inline size_t length() {
+				return _length;
+			}
+
+			virtual TOKEN_TYPE getType() = 0;
+			virtual std::string toString() = 0;
+
+			static std::string typeToString(TOKEN_TYPE t);
+
+		private:
+			size_t _position;
+			size_t _length;
+		};
+	}
 }
 
 #endif /* defined(__TimScript_5__Token__) */

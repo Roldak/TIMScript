@@ -14,10 +14,10 @@
 #include "Instance.h"
 
 namespace ts {
-    namespace tstd{
-        
-        void importPrimitive(cmplr::Compiler& cmp);
-    }
+	namespace tstd {
+
+		void importPrimitive(cmplr::Compiler& cmp);
+	}
 }
 
 #endif /* defined(__TIMScript__TSTDPrimitive__) */

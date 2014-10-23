@@ -23,32 +23,32 @@
 #include "TSTDMap.h"
 #include "TSTDFile.h"
 
-namespace ts{
-    namespace tstd{
-        
-        static void importSTD(cmplr::Compiler& cmp){
-            importPrimitive(cmp); // import Primitives lib
-            importMath(cmp); // import Math lib
-            importString(cmp); // import String lib
-            importClock(cmp); // import Clock lib
-            importThread(cmp); // import Thead lib
-            importArray(cmp); // import Array lib
-            importIterable(cmp); // import Iterator lib
-            importVector(cmp); // import Containers lib
-            importMap(cmp); // import Map lib
-            importFile(cmp); // import File lib
-            /* TODO :
-             
-                -List
-                -Map
-                -Set
-                -Regexp
-             
-                ...
-             */
-        }
-        
-    }
+namespace ts {
+	namespace tstd {
+
+		static void importSTD(cmplr::Compiler& cmp) {
+			importPrimitive(cmp); // import Primitives lib
+			importMath(cmp); // import Math lib
+			importString(cmp); // import String lib
+			importClock(cmp); // import Clock lib
+			importThread(cmp); // import Thead lib
+			importArray(cmp); // import Array lib
+			importIterable(cmp); // import Iterator lib
+			importVector(cmp); // import Containers lib
+			importMap(cmp); // import Map lib
+			importFile(cmp); // import File lib
+			/* TODO :
+
+			    -List
+			    -Map
+			    -Set
+			    -Regexp
+
+			    ...
+			 */
+		}
+
+	}
 }
 
 #endif /* defined(__TIMScript__TSTD__) */

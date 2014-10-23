@@ -13,11 +13,11 @@
 #include "TIMScript.h"
 
 namespace ts {
-    namespace tstd{
-        
-        void importFile(cmplr::Compiler& cmp);
-        
-    }
+	namespace tstd {
+
+		void importFile(cmplr::Compiler& cmp);
+
+	}
 }
 
 #endif /* defined(__TIMScript__TSTDFile__) */

@@ -14,10 +14,10 @@ aux_source_directory(./Types SRC_LIST)
 #add_executable(${PROJECT_NAME} ${SRC_LIST})
 add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++11 -o3 ${CMAKE_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long")
 
-set(CMAKE_BUILD_TYPE "debug")
+set(CMAKE_BUILD_TYPE "release")
 include_directories( ./
     ./Compiler/
     ./Compiler/Nodes/

@@ -12,135 +12,135 @@
 #include <vector>
 
 namespace ts {
-    namespace tstd{
-        
-        void importIterable(cmplr::Compiler& cmp){
-            using namespace nodes;
-            using namespace tools;
+	namespace tstd {
 
-            ClassNode* objectClass=cmp.findClass("Object");
-            InterfaceNode* iterableInterface=cmp.addInterface("Iterable");
-            ClassNode* iteratorClass=cmp.addClass("Iterator");
+		void importIterable(cmplr::Compiler& cmp) {
+			using namespace nodes;
+			using namespace tools;
 
-            cmp.setAbstractInterfaceData(iterableInterface, "iterator", UserDataInfo("(@Iterable)->Iterator"));
+			ClassNode* objectClass = cmp.findClass("Object");
+			InterfaceNode* iterableInterface = cmp.addInterface("Iterable");
+			ClassNode* iteratorClass = cmp.addClass("Iterator");
 
-            iteratorClass->extends(objectClass);
-            iteratorClass->setAbstract(true);
+			cmp.setAbstractInterfaceData(iterableInterface, "iterator", UserDataInfo("(@Iterable)->Iterator"));
 
-            cmp.setClassData(iteratorClass, "next", UserDataInfo("(Iterator)->Object"));
-            cmp.setClassData(iteratorClass, "hasNext", UserDataInfo("(Iterator)->bool"));
+			iteratorClass->extends(objectClass);
+			iteratorClass->setAbstract(true);
 
-            ImplementationLocation iteratorFuncPos=iterableInterface->getDefinitionIndex("iterator");
+			cmp.setClassData(iteratorClass, "next", UserDataInfo("(Iterator)->Object"));
+			cmp.setClassData(iteratorClass, "hasNext", UserDataInfo("(Iterator)->bool"));
 
-            size_t nextFuncPos=iteratorClass->getDefinitionIndex("next");
-            size_t hasNextFuncPos=iteratorClass->getDefinitionIndex("hasNext");
+			ImplementationLocation iteratorFuncPos = iterableInterface->getDefinitionIndex("iterator");
 
-            cmp.setInterfaceData(iterableInterface, "forEach", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext* ctx, TSDATA* args){
-                TSDATA it=ctx->callImplementation(iteratorFuncPos, {args[0]});
-                objects::Function* next=(objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
-                objects::Function* hasNext=(objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
-                objects::Function* function=(objects::Function*)args[1].Ref;
+			size_t nextFuncPos = iteratorClass->getDefinitionIndex("next");
+			size_t hasNextFuncPos = iteratorClass->getDefinitionIndex("hasNext");
 
-                FunctionCaller nextCaller(ctx, next);
-                FunctionCaller hasNextCaller(ctx, hasNext);
-                FunctionCaller functionCaller(ctx, function);
+			cmp.setInterfaceData(iterableInterface, "forEach", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext * ctx, TSDATA * args) {
+				TSDATA it = ctx->callImplementation(iteratorFuncPos, {args[0]});
+				objects::Function* next = (objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
+				objects::Function* hasNext = (objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
+				objects::Function* function = (objects::Function*)args[1].Ref;
 
-                std::vector<TSDATA> next_hasNext_Args={it};
-                std::vector<TSDATA> functionArgs(1);
+				FunctionCaller nextCaller(ctx, next);
+				FunctionCaller hasNextCaller(ctx, hasNext);
+				FunctionCaller functionCaller(ctx, function);
 
-                while(hasNextCaller.call(next_hasNext_Args).Int){
-                    functionArgs[0]=nextCaller.call(next_hasNext_Args);
-                    functionCaller.call(functionArgs);
-                    ctx->gc->store(functionArgs[0].Instance);
-                }
+				std::vector<TSDATA> next_hasNext_Args = {it};
+				std::vector<TSDATA> functionArgs(1);
 
-                ctx->gc->store(it.Instance);
+				while (hasNextCaller.call(next_hasNext_Args).Int) {
+					functionArgs[0] = nextCaller.call(next_hasNext_Args);
+					functionCaller.call(functionArgs);
+					ctx->gc->store(functionArgs[0].Instance);
+				}
 
-                return TSDATA();
+				ctx->gc->store(it.Instance);
 
-            }, "(@Iterable, (Object)->void)->void"));
+				return TSDATA();
 
-            cmp.setInterfaceData(iterableInterface, "fold", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext* ctx, TSDATA* args){
-                TSDATA it=ctx->callImplementation(iteratorFuncPos, {args[0]});
-                objects::Function* next=(objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
-                objects::Function* hasNext=(objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
-                objects::Function* function=(objects::Function*)args[2].Ref;
+			}, "(@Iterable, (Object)->void)->void"));
 
-                FunctionCaller nextCaller(ctx, next);
-                FunctionCaller hasNextCaller(ctx, hasNext);
-                FunctionCaller functionCaller(ctx, function);
+			cmp.setInterfaceData(iterableInterface, "fold", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext * ctx, TSDATA * args) {
+				TSDATA it = ctx->callImplementation(iteratorFuncPos, {args[0]});
+				objects::Function* next = (objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
+				objects::Function* hasNext = (objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
+				objects::Function* function = (objects::Function*)args[2].Ref;
 
-                std::vector<TSDATA> next_hasNext_Args={it};
-                std::vector<TSDATA> functionArgs(2);
-                functionArgs[0]=args[1];
+				FunctionCaller nextCaller(ctx, next);
+				FunctionCaller hasNextCaller(ctx, hasNext);
+				FunctionCaller functionCaller(ctx, function);
 
-                while(hasNextCaller.call(next_hasNext_Args).Int){
-                    functionArgs[1]=nextCaller.call(next_hasNext_Args);
-                    TSDATA tmp=functionCaller.call(functionArgs);
-                    ctx->gc->store(functionArgs[0].Instance);
-                    ctx->gc->store(functionArgs[1].Instance);
-                    functionArgs[0]=tmp;
-                }
+				std::vector<TSDATA> next_hasNext_Args = {it};
+				std::vector<TSDATA> functionArgs(2);
+				functionArgs[0] = args[1];
 
-                ctx->gc->store(it.Instance);
-                return functionArgs[0];
+				while (hasNextCaller.call(next_hasNext_Args).Int) {
+					functionArgs[1] = nextCaller.call(next_hasNext_Args);
+					TSDATA tmp = functionCaller.call(functionArgs);
+					ctx->gc->store(functionArgs[0].Instance);
+					ctx->gc->store(functionArgs[1].Instance);
+					functionArgs[0] = tmp;
+				}
 
-            }, "(@Iterable, Object, (Object, Object)->Object)->Object"));
+				ctx->gc->store(it.Instance);
+				return functionArgs[0];
 
-            cmp.setInterfaceData(iterableInterface, "exists", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext* ctx, TSDATA* args){
-                TSDATA it=ctx->callImplementation(iteratorFuncPos, {args[0]});
-                objects::Function* next=(objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
-                objects::Function* hasNext=(objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
-                objects::Function* function=(objects::Function*)args[1].Ref;
+			}, "(@Iterable, Object, (Object, Object)->Object)->Object"));
 
-                FunctionCaller nextCaller(ctx, next);
-                FunctionCaller hasNextCaller(ctx, hasNext);
-                FunctionCaller functionCaller(ctx, function);
+			cmp.setInterfaceData(iterableInterface, "exists", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext * ctx, TSDATA * args) {
+				TSDATA it = ctx->callImplementation(iteratorFuncPos, {args[0]});
+				objects::Function* next = (objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
+				objects::Function* hasNext = (objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
+				objects::Function* function = (objects::Function*)args[1].Ref;
 
-                std::vector<TSDATA> next_hasNext_Args={it};
-                std::vector<TSDATA> functionArgs(1);
+				FunctionCaller nextCaller(ctx, next);
+				FunctionCaller hasNextCaller(ctx, hasNext);
+				FunctionCaller functionCaller(ctx, function);
 
-                TSDATA ret;
+				std::vector<TSDATA> next_hasNext_Args = {it};
+				std::vector<TSDATA> functionArgs(1);
 
-                while(hasNextCaller.call(next_hasNext_Args).Int){
-                    functionArgs[0]=nextCaller.call(next_hasNext_Args);
-                    ret=functionCaller.call(functionArgs);
-                    ctx->gc->store(functionArgs[0].Instance);
-                    if(ret.Int)
-                        break;
-                }
+				TSDATA ret;
 
-                ctx->gc->store(it.Instance);
+				while (hasNextCaller.call(next_hasNext_Args).Int) {
+					functionArgs[0] = nextCaller.call(next_hasNext_Args);
+					ret = functionCaller.call(functionArgs);
+					ctx->gc->store(functionArgs[0].Instance);
+					if (ret.Int)
+						break;
+				}
 
-                return ret;
-            }, "(@Iterable, (Object)->bool)->bool"));
+				ctx->gc->store(it.Instance);
 
-            cmp.setInterfaceData(iterableInterface, "count", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext* ctx, TSDATA* args){
-                TSDATA it=ctx->callImplementation(iteratorFuncPos, {args[0]});
-                objects::Function* next=(objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
-                objects::Function* hasNext=(objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
-                objects::Function* function=(objects::Function*)args[1].Ref;
+				return ret;
+			}, "(@Iterable, (Object)->bool)->bool"));
 
-                FunctionCaller nextCaller(ctx, next);
-                FunctionCaller hasNextCaller(ctx, hasNext);
-                FunctionCaller functionCaller(ctx, function);
+			cmp.setInterfaceData(iterableInterface, "count", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext * ctx, TSDATA * args) {
+				TSDATA it = ctx->callImplementation(iteratorFuncPos, {args[0]});
+				objects::Function* next = (objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
+				objects::Function* hasNext = (objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
+				objects::Function* function = (objects::Function*)args[1].Ref;
 
-                std::vector<TSDATA> next_hasNext_Args={it};
-                std::vector<TSDATA> functionArgs(1);
+				FunctionCaller nextCaller(ctx, next);
+				FunctionCaller hasNextCaller(ctx, hasNext);
+				FunctionCaller functionCaller(ctx, function);
 
-                TSDATA count;
-                count.Int=0;
+				std::vector<TSDATA> next_hasNext_Args = {it};
+				std::vector<TSDATA> functionArgs(1);
 
-                while(hasNextCaller.call(next_hasNext_Args).Int){
-                    functionArgs[0]=nextCaller.call(next_hasNext_Args);
-                    count.Int+=functionCaller.call(functionArgs).Int;
-                    ctx->gc->store(functionArgs[0].Instance);
-                }
+				TSDATA count;
+				count.Int = 0;
 
-                ctx->gc->store(it.Instance);
+				while (hasNextCaller.call(next_hasNext_Args).Int) {
+					functionArgs[0] = nextCaller.call(next_hasNext_Args);
+					count.Int += functionCaller.call(functionArgs).Int;
+					ctx->gc->store(functionArgs[0].Instance);
+				}
 
-                return count;
-            }, "(@Iterable, (Object)->bool)->int"));
-        }
-    }
+				ctx->gc->store(it.Instance);
+
+				return count;
+			}, "(@Iterable, (Object)->bool)->int"));
+		}
+	}
 }

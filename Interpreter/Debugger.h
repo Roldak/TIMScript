@@ -13,25 +13,25 @@
 #include <vector>
 #include "Utils.h"
 
-namespace ts{
-    class AbstractDebugger{
-    public:
+namespace ts {
+	class AbstractDebugger {
+	public:
 
-        void setBreakPointBetween(size_t startOfLine, size_t endOfLine);
-        void removeBreakPoint(size_t index);
+		void setBreakPointBetween(size_t startOfLine, size_t endOfLine);
+		void removeBreakPoint(size_t index);
 
-        virtual bool shouldBreak(size_t pos);
-        virtual void updateDebuggingInfo(size_t pos, TSDATA* locals, size_t localsCount) = 0;
-        virtual void functionCalled(const std::string& funcName, void* address) = 0;
-        virtual void functionReturned() = 0;
-        virtual void dynAllocation() = 0;
-        virtual void readMessage() = 0;
+		virtual bool shouldBreak(size_t pos);
+		virtual void updateDebuggingInfo(size_t pos, TSDATA* locals, size_t localsCount) = 0;
+		virtual void functionCalled(const std::string& funcName, void* address) = 0;
+		virtual void functionReturned() = 0;
+		virtual void dynAllocation() = 0;
+		virtual void readMessage() = 0;
 
-    protected:
+	protected:
 
-        std::vector<std::pair<size_t, size_t>> _breakPoints;
+		std::vector<std::pair<size_t, size_t>> _breakPoints;
 
-    };
+	};
 }
 
 #endif /* defined(__TIMScript__Debugger__) */

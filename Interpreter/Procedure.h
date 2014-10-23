@@ -17,49 +17,73 @@
 /* contains the bytecode of a function, as well as the estimated stack size and
  the number of local variable of the function. */
 
-namespace ts{
+namespace ts {
 
-    class Procedure{
-    public:
-        Procedure(const std::string& name);
+	class Procedure {
+	public:
+		Procedure(const std::string& name);
 
-        Procedure(const size_t st_sz,
-                  const size_t lcl_sz,
-                  const TSINSTR* bytecode,
-                  const size_t bytecodeLength,
-                  size_t_Array** refsLoc,
-                  ExceptionTable** exTable,
-                  DebugInfos** dbgInfo,
-                  const std::string& name);
-        
-        ~Procedure(){/*delete[] _bytecode;*/}
-        
-        inline const size_t stackSize() const{return _stack_size;}
-        inline const size_t numberOfLocals() const{return _local_var_nb;}
-        inline const TSINSTR* byteCode() const{return _bytecode;}
-        inline const size_t byteCodeLength() const{return _bytecode_length;}
-        
-        inline void setRefMap(size_t_Array** refMap){_refsLocations=refMap;}
-        inline size_t_Array* getRefMap() const{return *_refsLocations;}
+		Procedure(const size_t st_sz,
+				  const size_t lcl_sz,
+				  const TSINSTR* bytecode,
+				  const size_t bytecodeLength,
+				  size_t_Array** refsLoc,
+				  ExceptionTable** exTable,
+				  DebugInfos** dbgInfo,
+				  const std::string& name);
 
-        inline void setExTable(ExceptionTable** exTable){_exTable=exTable;}
-        inline ExceptionTable* getExTable() const{return *_exTable;}
+		~Procedure() {
+			/*delete[] _bytecode;*/
+		}
 
-        inline void setDebugInfos(DebugInfos** dbgInfo){_dbgInfo=dbgInfo;}
-        inline DebugInfos* getDebugInfos() const{return _dbgInfo == NULL ? NULL : *_dbgInfo;}
+		inline const size_t stackSize() const {
+			return _stack_size;
+		}
+		inline const size_t numberOfLocals() const {
+			return _local_var_nb;
+		}
+		inline const TSINSTR* byteCode() const {
+			return _bytecode;
+		}
+		inline const size_t byteCodeLength() const {
+			return _bytecode_length;
+		}
 
-        inline const std::string& name() const{return _name;}
-        
-    private:
-        
-        const size_t _stack_size, _local_var_nb;
-        const TSINSTR* _bytecode;
-        const size_t _bytecode_length;
-        size_t_Array** _refsLocations;
-        ExceptionTable** _exTable;
-        DebugInfos** _dbgInfo;
-        const std::string _name;
-    };
+		inline void setRefMap(size_t_Array** refMap) {
+			_refsLocations = refMap;
+		}
+		inline size_t_Array* getRefMap() const {
+			return *_refsLocations;
+		}
+
+		inline void setExTable(ExceptionTable** exTable) {
+			_exTable = exTable;
+		}
+		inline ExceptionTable* getExTable() const {
+			return *_exTable;
+		}
+
+		inline void setDebugInfos(DebugInfos** dbgInfo) {
+			_dbgInfo = dbgInfo;
+		}
+		inline DebugInfos* getDebugInfos() const {
+			return _dbgInfo == NULL ? NULL : *_dbgInfo;
+		}
+
+		inline const std::string& name() const {
+			return _name;
+		}
+
+	private:
+
+		const size_t _stack_size, _local_var_nb;
+		const TSINSTR* _bytecode;
+		const size_t _bytecode_length;
+		size_t_Array** _refsLocations;
+		ExceptionTable** _exTable;
+		DebugInfos** _dbgInfo;
+		const std::string _name;
+	};
 
 }
 

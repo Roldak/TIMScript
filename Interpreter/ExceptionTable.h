@@ -13,20 +13,20 @@
 #include <vector>
 #include "Utils.h"
 
-namespace ts{
+namespace ts {
 
-    struct ExceptionTableCatch{
-        const size_t localIndex;
-        const size_t classIndex;
-        const size_t catchEntryIP;
-    };
+	struct ExceptionTableCatch {
+		const size_t localIndex;
+		const size_t classIndex;
+		const size_t catchEntryIP;
+	};
 
-    struct ExceptionTableTry{
-        size_t tryBlockIPStart, tryBlockIPEnd;
-        std::vector<ExceptionTableCatch> catches;
-    };
+	struct ExceptionTableTry {
+		size_t tryBlockIPStart, tryBlockIPEnd;
+		std::vector<ExceptionTableCatch> catches;
+	};
 
-    typedef std::vector<ExceptionTableTry> ExceptionTable;
+	typedef std::vector<ExceptionTableTry> ExceptionTable;
 
 }
 

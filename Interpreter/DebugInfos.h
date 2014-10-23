@@ -13,28 +13,30 @@
 #include <vector>
 #include "Utils.h"
 
-namespace ts{
+namespace ts {
 
-    struct DebugVar{
-        size_t index;
-        std::string* name;
-        DEBUG_TYPE type;
-    };
+	struct DebugVar {
+		size_t index;
+		std::string* name;
+		DEBUG_TYPE type;
+	};
 
-    typedef std::vector<DebugVar> VarDeclTable;
+	typedef std::vector<DebugVar> VarDeclTable;
 
-    class DebugInfos{
-    public:
+	class DebugInfos {
+	public:
 
-        DebugInfos(const VarDeclTable& varDecls) : _vars(varDecls) {}
+		DebugInfos(const VarDeclTable& varDecls) : _vars(varDecls) {}
 
-        inline const VarDeclTable& getVars(){return _vars;}
+		inline const VarDeclTable& getVars() {
+			return _vars;
+		}
 
-    private:
+	private:
 
-        const VarDeclTable _vars;
+		const VarDeclTable _vars;
 
-    };
+	};
 }
 
 #endif /* defined(__TIMScript__DebugInfos__) */

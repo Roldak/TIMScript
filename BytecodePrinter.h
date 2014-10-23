@@ -13,19 +13,19 @@
 #include "Utils.h"
 #include "Procedure.h"
 
-namespace ts{
-    
-    class BytecodePrinter{
-    public:
-        
-        static std::string translate(const Procedure* proc);
-        
-    private:
-        
-        static std::string instrName(TSINSTR instr);
-        
-    };
-    
+namespace ts {
+
+	class BytecodePrinter {
+	public:
+
+		static std::string translate(const Procedure* proc);
+
+	private:
+
+		static std::string instrName(TSINSTR instr);
+
+	};
+
 }
 
 #endif /* defined(__TIMScript__BytecodePrinter__) */

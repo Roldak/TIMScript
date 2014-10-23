@@ -9,21 +9,29 @@
 #include "AbstractToken.h"
 
 namespace ts {
-    namespace tok{
-        
-        std::string AbstractToken::typeToString(TOKEN_TYPE t){
-            switch (t) {
-                case TK_BOOLEAN:    return "Boolean";
-                case TK_INTEGER:    return "Integer";
-                case TK_REAL:       return "Real";
-                case TK_STRING:     return "String";
-                case TK_IDENTIFIER: return "Identifier";
-                case TK_KEYWORD:    return "Keyword";
-                case TK_OPERATOR:   return "Operator";
-                case TK_UNDEFINED:  return "Undefined";
-            }
-            return "";
-        }
-        
-    }
+	namespace tok {
+
+		std::string AbstractToken::typeToString(TOKEN_TYPE t) {
+			switch (t) {
+				case TK_BOOLEAN:
+					return "Boolean";
+				case TK_INTEGER:
+					return "Integer";
+				case TK_REAL:
+					return "Real";
+				case TK_STRING:
+					return "String";
+				case TK_IDENTIFIER:
+					return "Identifier";
+				case TK_KEYWORD:
+					return "Keyword";
+				case TK_OPERATOR:
+					return "Operator";
+				case TK_UNDEFINED:
+					return "Undefined";
+			}
+			return "";
+		}
+
+	}
 }

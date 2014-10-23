@@ -13,10 +13,10 @@
 #include "TIMScript.h"
 
 namespace ts {
-    namespace tstd{
-        
-        void importArray(cmplr::Compiler& cmp);
-    }
+	namespace tstd {
+
+		void importArray(cmplr::Compiler& cmp);
+	}
 }
 
 #endif /* defined(__TIMScript__TSTDArray__) */

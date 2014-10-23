@@ -8,10 +8,10 @@
 
 #include "CompilationContext.h"
 
-namespace ts{
-    namespace cmplr{
+namespace ts {
+	namespace cmplr {
 
-        Compiler* CompilationContext::cmp=NULL;
+		Compiler* CompilationContext::cmp = NULL;
 
-    }
+	}
 }

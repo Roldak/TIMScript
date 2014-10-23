@@ -15,86 +15,103 @@
 #include "DefinitionReferenceNode.h"
 
 namespace ts {
-    namespace cmplr{
-        class Definition;
-    }
-    
-    namespace nodes{
-        class FunctionNode;
+	namespace cmplr {
+		class Definition;
+	}
 
-        struct InterfaceField{
+	namespace nodes {
+		class FunctionNode;
 
-            InterfaceField() {}
-            InterfaceField(const std::string& n, DefinitionReferenceNode* ref)  : name(n), def(ref) {}
+		struct InterfaceField {
 
-            const std::string name;
+			InterfaceField() {}
+			InterfaceField(const std::string& n, DefinitionReferenceNode* ref)  : name(n), def(ref) {}
 
-            DefinitionReferenceNode* def;
+			const std::string name;
 
-        };
+			DefinitionReferenceNode* def;
 
-        class InterfaceNode : public AbstractNode{
-        public:
-            
-            InterfaceNode(size_t pos, size_t length, const std::string& n, size_t id);
-            virtual ~InterfaceNode();
+		};
 
-            inline void resetNodeLocation(size_t pos, size_t length){_pos=pos; _length=length;}
-            
-            inline const std::string& name(){return _name;}
-            inline type::InterfaceType* typeInterface(){return _interfaceType;}
+		class InterfaceNode : public AbstractNode {
+		public:
 
-            inline void addDefinition(const std::string& name, cmplr::Definition* d){
-                addDefinition(name, new DefinitionReferenceNode(0, 0, name, d));
-            }
+			InterfaceNode(size_t pos, size_t length, const std::string& n, size_t id);
+			virtual ~InterfaceNode();
 
-            inline void addDefinition(const std::string& name, DefinitionReferenceNode* ref){
-                _defs.push_back(InterfaceField(name, ref));
-            }
+			inline void resetNodeLocation(size_t pos, size_t length) {
+				_pos = pos;
+				_length = length;
+			}
 
-            void addDefinitions(const std::map<std::string, cmplr::Definition*>& definitions);
+			inline const std::string& name() {
+				return _name;
+			}
+			inline type::InterfaceType* typeInterface() {
+				return _interfaceType;
+			}
 
-            inline const std::vector<InterfaceField>& defs(){ return _defs; }
+			inline void addDefinition(const std::string& name, cmplr::Definition* d) {
+				addDefinition(name, new DefinitionReferenceNode(0, 0, name, d));
+			}
 
-            inline ImplementationLocation getDefinitionIndex(const std::string& name){
-                for(size_t i=0; i<_defs.size(); ++i){
-                    if(_defs[i].name==name)
-                        return ImplementationLocation(this, _ID, i);
-                }
+			inline void addDefinition(const std::string& name, DefinitionReferenceNode* ref) {
+				_defs.push_back(InterfaceField(name, ref));
+			}
 
-                for(InterfaceNode* interface : _interfaces){
-                    ImplementationLocation loc=interface->getDefinitionIndex(name);
-                    if(!loc.Empty)
-                        return loc;
-                }
+			void addDefinitions(const std::map<std::string, cmplr::Definition*>& definitions);
 
-                return ImplementationLocation();
-            }
+			inline const std::vector<InterfaceField>& defs() {
+				return _defs;
+			}
 
-            inline void addInterface(InterfaceNode* i){_interfaces.push_back(i);}
-            inline const std::vector<InterfaceNode*>& getInterfaces(){return _interfaces;}
+			inline ImplementationLocation getDefinitionIndex(const std::string& name) {
+				for (size_t i = 0; i < _defs.size(); ++i) {
+					if (_defs[i].name == name)
+						return ImplementationLocation(this, _ID, i);
+				}
 
-            inline size_t interfaceID(){return _ID;}
+				for (InterfaceNode* interface : _interfaces) {
+					ImplementationLocation loc = interface->getDefinitionIndex(name);
+					if (!loc.Empty)
+						return loc;
+				}
 
-            virtual void semanticTraverse();
-            
-            virtual void pushBytecode(std::vector<TSINSTR>& program);
-            virtual std::string toString();
+				return ImplementationLocation();
+			}
 
-            virtual NODE_TYPE getNodeType(){return N_INTERFACE;}
-            
-        private:
+			inline void addInterface(InterfaceNode* i) {
+				_interfaces.push_back(i);
+			}
+			inline const std::vector<InterfaceNode*>& getInterfaces() {
+				return _interfaces;
+			}
 
-            const std::string _name;
-            size_t _ID;
+			inline size_t interfaceID() {
+				return _ID;
+			}
 
-            type::InterfaceType* _interfaceType;
+			virtual void semanticTraverse();
 
-            std::vector<InterfaceField> _defs;
-            std::vector<InterfaceNode*> _interfaces;
-        };
-        
-    }
+			virtual void pushBytecode(std::vector<TSINSTR>& program);
+			virtual std::string toString();
+
+			virtual NODE_TYPE getNodeType() {
+				return N_INTERFACE;
+			}
+
+		private:
+
+			const std::string _name;
+			size_t _ID;
+
+			type::InterfaceType* _interfaceType;
+
+			std::vector<InterfaceField> _defs;
+			std::vector<InterfaceNode*> _interfaces;
+		};
+
+	}
 }
 
 

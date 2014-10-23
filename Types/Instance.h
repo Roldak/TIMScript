@@ -12,43 +12,57 @@
 #include <iostream>
 #include "Class.h"
 
-namespace ts{
-    namespace objects{
-        
-        class Instance : public Object{
-        public:
-            Instance(Class* c);
-            Instance(Class* c, char* memPool);
-            virtual ~Instance();
-            
-            virtual void freeThis(ExecutionContext* ctx){
-                _class->deleteInstance(this, ctx);
-            }
-            
-            inline TSDATA* attrs(){return _attrs;}
-            inline TSDATA getAttr(size_t index){return _attrs[index];}
-            inline void setAttr(size_t index, TSDATA data){_attrs[index]=data;}
-            
-            inline TSDATA getVirtual(size_t index){return _class->getVirtual(index);}
-            inline TSDATA getImplementation(size_t interfaceID, size_t index){return _class->getImplementation(interfaceID, index);}
-            
-            inline Class* getClass(){return _class;}
+namespace ts {
+	namespace objects {
 
-            bool instanceOf(objects::Class* clss);
-            
-            // GC
-            
-            virtual void gcPushRefs(std::vector<Object*>& objs);
-            virtual const size_t size(){return sizeof(Instance);}
-            
-        private:
-            
-            TSDATA* _attrs;
-            Class* _class;
-            bool _scoped;
-        };
-        
-    }
+		class Instance : public Object {
+		public:
+			Instance(Class* c);
+			Instance(Class* c, char* memPool);
+			virtual ~Instance();
+
+			virtual void freeThis(ExecutionContext* ctx) {
+				_class->deleteInstance(this, ctx);
+			}
+
+			inline TSDATA* attrs() {
+				return _attrs;
+			}
+			inline TSDATA getAttr(size_t index) {
+				return _attrs[index];
+			}
+			inline void setAttr(size_t index, TSDATA data) {
+				_attrs[index] = data;
+			}
+
+			inline TSDATA getVirtual(size_t index) {
+				return _class->getVirtual(index);
+			}
+			inline TSDATA getImplementation(size_t interfaceID, size_t index) {
+				return _class->getImplementation(interfaceID, index);
+			}
+
+			inline Class* getClass() {
+				return _class;
+			}
+
+			bool instanceOf(objects::Class* clss);
+
+			// GC
+
+			virtual void gcPushRefs(std::vector<Object*>& objs);
+			virtual const size_t size() {
+				return sizeof(Instance);
+			}
+
+		private:
+
+			TSDATA* _attrs;
+			Class* _class;
+			bool _scoped;
+		};
+
+	}
 }
 
 #endif /* defined(__TIMScript__Instance__) */

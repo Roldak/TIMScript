@@ -15,31 +15,36 @@
 #include "AbstractToken.h"
 
 namespace ts {
-    namespace tok{
+	namespace tok {
 
-        enum KEYWORD_TYPE{
-            BEGIN, LET, DEF, TYPEDEF, PRINT, IF, ELSE, WHILE, FOR, FOREACH, IN, CLASS, INTERFACE, STATIC, EXTENDS, ABSTRACT,
-            INCLUDE, IMPORT, RETURN, SCOPE, ASYNC, MATCH, CASE, DEFAULT, TRY, KTHROW, CATCH, STRUCT};
+		enum KEYWORD_TYPE {
+			BEGIN, LET, DEF, TYPEDEF, PRINT, IF, ELSE, WHILE, FOR, FOREACH, IN, CLASS, INTERFACE, STATIC, EXTENDS, ABSTRACT,
+			INCLUDE, IMPORT, RETURN, SCOPE, ASYNC, MATCH, CASE, DEFAULT, TRY, KTHROW, CATCH, STRUCT
+		};
 
-        class Keyword : public AbstractToken{
-        public:
-            Keyword(size_t pos, size_t len, KEYWORD_TYPE type) : AbstractToken(pos, len), _kwType(type) {}
-            virtual ~Keyword() {}
-            
-            inline KEYWORD_TYPE kwType() {return _kwType;}
+		class Keyword : public AbstractToken {
+		public:
+			Keyword(size_t pos, size_t len, KEYWORD_TYPE type) : AbstractToken(pos, len), _kwType(type) {}
+			virtual ~Keyword() {}
 
-            virtual TOKEN_TYPE getType(){return TK_KEYWORD;}
-            virtual std::string toString();
+			inline KEYWORD_TYPE kwType() {
+				return _kwType;
+			}
 
-            static Keyword* getKeyWordFromString(size_t pos, size_t len, const std::string& str);
-            static bool isValidKeyWord(const std::string& str);
-            static std::unordered_map<std::string, KEYWORD_TYPE> keywords;
-            
-        private:
-            KEYWORD_TYPE _kwType;
-        };
+			virtual TOKEN_TYPE getType() {
+				return TK_KEYWORD;
+			}
+			virtual std::string toString();
 
-    }
+			static Keyword* getKeyWordFromString(size_t pos, size_t len, const std::string& str);
+			static bool isValidKeyWord(const std::string& str);
+			static std::unordered_map<std::string, KEYWORD_TYPE> keywords;
+
+		private:
+			KEYWORD_TYPE _kwType;
+		};
+
+	}
 }
 
 #endif /* defined(__TimScript_5__Keyword__) */

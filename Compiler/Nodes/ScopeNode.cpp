@@ -8,23 +8,23 @@
 
 #include "ScopeNode.h"
 
-namespace ts{
-    namespace nodes{
-        
-        void ScopeNode::semanticTraverse(){
-            _content->semanticTraverse();
-            _cachedType=_content->type();
-        }
-        
-        void ScopeNode::pushBytecode(std::vector<TSINSTR>& program){
-            program.push_back(INIT_SCOPE);
-            _content->pushBytecode(program);
-            program.push_back(CLEAN_SCOPE);
-        }
-        
-        std::string ScopeNode::toString(){
-            return "scope"+_content->toString();
-        }
-        
-    }
+namespace ts {
+	namespace nodes {
+
+		void ScopeNode::semanticTraverse() {
+			_content->semanticTraverse();
+			_cachedType = _content->type();
+		}
+
+		void ScopeNode::pushBytecode(std::vector<TSINSTR>& program) {
+			program.push_back(INIT_SCOPE);
+			_content->pushBytecode(program);
+			program.push_back(CLEAN_SCOPE);
+		}
+
+		std::string ScopeNode::toString() {
+			return "scope" + _content->toString();
+		}
+
+	}
 }

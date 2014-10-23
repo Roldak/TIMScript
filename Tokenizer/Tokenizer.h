@@ -22,28 +22,28 @@
 
 namespace ts {
 
-    enum CHAR_TYPE{C_OPERATOR, C_DIGIT, C_CHARACTER, C_OTHER};
-    enum COMMENT_TYPE{NONE, SINGLE_LINE, MULTI_LINE};
+	enum CHAR_TYPE {C_OPERATOR, C_DIGIT, C_CHARACTER, C_OTHER};
+	enum COMMENT_TYPE {NONE, SINGLE_LINE, MULTI_LINE};
 
-    class Tokenizer{
-    public:
-        static std::vector<tok::AbstractToken*> tokenize(const std::string& source);
+	class Tokenizer {
+	public:
+		static std::vector<tok::AbstractToken*> tokenize(const std::string& source);
 
-        static CHAR_TYPE getCharType(char c);
-        static bool isOperator(char c);
-        static bool isDigit(char c);
-        static bool isCharacter(char c);
-        static bool isEOS(tok::Operator* o);
+		static CHAR_TYPE getCharType(char c);
+		static bool isOperator(char c);
+		static bool isDigit(char c);
+		static bool isCharacter(char c);
+		static bool isEOS(tok::Operator* o);
 
-    private:
+	private:
 
-        static void addToken(std::vector<tok::AbstractToken*>& tokens,
-                             tok::TOKEN_TYPE type,
-                             const std::string& str,
-                             size_t pos);
-        
-        static char readEscapeChar(char c);
-    };
+		static void addToken(std::vector<tok::AbstractToken*>& tokens,
+							 tok::TOKEN_TYPE type,
+							 const std::string& str,
+							 size_t pos);
+
+		static char readEscapeChar(char c);
+	};
 }
 
 #endif /* defined(__TimScript_5__Tokenizer__) */

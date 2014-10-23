@@ -15,195 +15,197 @@
 #include "UserData.h"
 #include "NativeData.h"
 
-namespace ts{
-    namespace tools{
+namespace ts {
+	namespace tools {
 
-        class FunctionBuilder{
-        public:
+		class FunctionBuilder {
+		public:
 
-            static UserDataInfo Make(const std::function<TSDATA(ExecutionContext*, TSDATA*)>& f, type::FunctionType* t);
-            static UserDataInfo Make(const std::function<TSDATA(ExecutionContext*, TSDATA*)>& f, const std::string& typestr);
-            
-            static UserDataInfo RealToReal(TSREAL (*f)(TSREAL));
-            static UserDataInfo IntToInt(TSINT (*f)(TSINT));
-            
-            static UserDataInfo Get(TSINT (*f)(TSINT)){return IntToInt(f);}
-            static UserDataInfo Get(TSREAL (*f)(TSREAL)){return RealToReal(f);}
+			static UserDataInfo Make(const std::function<TSDATA(ExecutionContext*, TSDATA*)>& f, type::FunctionType* t);
+			static UserDataInfo Make(const std::function<TSDATA(ExecutionContext*, TSDATA*)>& f, const std::string& typestr);
 
-            template<typename T>
-            static UserDataInfo Native(const std::function<T>& func){
-                return Function(func);
-            }
+			static UserDataInfo RealToReal(TSREAL (*f)(TSREAL));
+			static UserDataInfo IntToInt(TSINT (*f)(TSINT));
 
-            template<typename T, typename... Args>
-            static UserDataInfo Constructor(){
-                return Function((std::function<T*(Args...)>)_constructor<T, Args...>);
-            }
+			static UserDataInfo Get(TSINT (*f)(TSINT)) {
+				return IntToInt(f);
+			}
+			static UserDataInfo Get(TSREAL (*f)(TSREAL)) {
+				return RealToReal(f);
+			}
 
-            template<typename T>
-            static UserDataInfo Destructor(){
-                return Function((std::function<void(T*)>)_destructor<T>);
-            }
+			template<typename T>
+			static UserDataInfo Native(const std::function<T>& func) {
+				return Function(func);
+			}
 
-        private:
+			template<typename T, typename... Args>
+			static UserDataInfo Constructor() {
+				return Function((std::function<T*(Args...)>)_constructor<T, Args...>);
+			}
 
-            template<typename Ret, typename ...Args>
-            static UserDataInfo Function(std::function<Ret(Args...)> func){
+			template<typename T>
+			static UserDataInfo Destructor() {
+				return Function((std::function<void(T*)>)_destructor<T>);
+			}
 
-                typedef function_traits<decltype(func)> f_t;
+		private:
 
-                std::vector<type::Type*> argTypes;
-                populate<int, Args...>(argTypes);
+			template<typename Ret, typename ...Args>
+			static UserDataInfo Function(std::function<Ret(Args...)> func) {
 
-                std::function<TSDATA(ExecutionContext*, TSDATA*)> inner = [func](ExecutionContext* ctx, TSDATA* args)->TSDATA{
-                    return ArgsFlattener<0, f_t::nargs, decltype(func)>::apply(args, func);
-                };
+				typedef function_traits<decltype(func)> f_t;
 
-                return FunctionBuilder::Make(inner, new type::FunctionType(argTypes, getTSType<Ret>()));
-            }
+				std::vector<type::Type*> argTypes;
+				populate<int, Args...>(argTypes);
 
-            template<typename ...Args>
-            static UserDataInfo Function(std::function<void(Args...)> func){
+				std::function<TSDATA(ExecutionContext*, TSDATA*)> inner = [func](ExecutionContext * ctx, TSDATA * args)->TSDATA {
+					return ArgsFlattener<0, f_t::nargs, decltype(func)>::apply(args, func);
+				};
 
-                typedef function_traits<decltype(func)> f_t;
+				return FunctionBuilder::Make(inner, new type::FunctionType(argTypes, getTSType<Ret>()));
+			}
 
-                std::vector<type::Type*> argTypes;
-                populate<int, Args...>(argTypes);
+			template<typename ...Args>
+			static UserDataInfo Function(std::function<void(Args...)> func) {
 
-                std::function<TSDATA(ExecutionContext*, TSDATA*)> inner = [func](ExecutionContext* ctx, TSDATA* args)->TSDATA{
-                    ArgsFlattener<0, f_t::nargs, decltype(func)>::applyVoid(args, func);
-                    return TSDATA{.Int = 0};
-                };
+				typedef function_traits<decltype(func)> f_t;
 
-                return FunctionBuilder::Make(inner, new type::FunctionType(argTypes, type::BasicType::Void));
-            }
+				std::vector<type::Type*> argTypes;
+				populate<int, Args...>(argTypes);
 
-            template<typename T>
-            struct function_traits;
+				std::function<TSDATA(ExecutionContext*, TSDATA*)> inner = [func](ExecutionContext * ctx, TSDATA * args)->TSDATA {
+					ArgsFlattener<0, f_t::nargs, decltype(func)>::applyVoid(args, func);
+					return TSDATA{.Int = 0};
+				};
 
-            template<typename R, typename ...Args>
-            struct function_traits<std::function<R(Args...)>>{
-                static const size_t nargs=sizeof...(Args);
+				return FunctionBuilder::Make(inner, new type::FunctionType(argTypes, type::BasicType::Void));
+			}
 
-                typedef R result_type;
+			template<typename T>
+			struct function_traits;
 
-                template<size_t i>
-                using ArgAt = typename std::tuple_element<i, std::tuple<Args...>>::type;
+			template<typename R, typename ...Args>
+			struct function_traits<std::function<R(Args...)>> {
+						static const size_t nargs = sizeof...(Args);
 
-            };
+						typedef R result_type;
 
-            template<typename T>
-            static type::Type* getTSType(){
-                if(std::is_same<bool, T>::value)
-                    return type::BasicType::Bool;
-                else if (std::is_integral<T>::value)
-                    return type::BasicType::Int;
-                else if(std::is_floating_point<T>::value)
-                    return type::BasicType::Real;
-                else
-                    return type::BasicType::Int;
-            }
+						template<size_t i>
+						using ArgAt = typename std::tuple_element<i, std::tuple<Args...>>::type;
 
-            template<typename USELESS, typename Arg1, typename ...Args>
-            static void populate(std::vector<type::Type*>& argTypes){
-                argTypes.push_back(getTSType<Arg1>());
-                populate<USELESS, Args...>(argTypes);
-            }
+								};
 
-            template<typename USELESS>
-            static void populate(std::vector<type::Type*>&){ }
+			template<typename T>
+			static type::Type* getTSType() {
+				if (std::is_same<bool, T>::value)
+					return type::BasicType::Bool;
+				else if (std::is_integral<T>::value)
+					return type::BasicType::Int;
+				else if (std::is_floating_point<T>::value)
+					return type::BasicType::Real;
+				else
+					return type::BasicType::Int;
+			}
 
-            template<size_t i, size_t N, typename Func, typename ...Args>
-            struct ArgsFlattener
-            {
-                static TSDATA apply(TSDATA* args, const Func& func, Args... a) {
-                    typedef function_traits<Func> f_t;
-                    typedef typename f_t::template ArgAt<i> Arg;
+			template<typename USELESS, typename Arg1, typename ...Args>
+			static void populate(std::vector<type::Type*>& argTypes) {
+				argTypes.push_back(getTSType<Arg1>());
+				populate<USELESS, Args...>(argTypes);
+			}
 
-                    return ArgsFlattener<i+1, N, Func, Args..., Arg>::apply(args, func, a..., fromTSDATA<Arg>(args[i]));
-                }
+			template<typename USELESS>
+			static void populate(std::vector<type::Type*>&) { }
 
-                static void applyVoid(TSDATA* args, const Func& func, Args... a) {
-                    typedef function_traits<Func> f_t;
-                    typedef typename f_t::template ArgAt<i> Arg;
+			template<size_t i, size_t N, typename Func, typename ...Args>
+			struct ArgsFlattener {
+				static TSDATA apply(TSDATA* args, const Func& func, Args... a) {
+					typedef function_traits<Func> f_t;
+					typedef typename f_t::template ArgAt<i> Arg;
 
-                    ArgsFlattener<i+1, N, Func, Args..., Arg>::applyVoid(args, func, a..., fromTSDATA<Arg>(args[i]));
-                }
-            };
+					return ArgsFlattener < i + 1, N, Func, Args..., Arg >::apply(args, func, a..., fromTSDATA<Arg>(args[i]));
+				}
 
-            template<size_t N, typename Func, typename ...Args>
-            struct ArgsFlattener<N, N, Func, Args...>
-            {
-                static TSDATA apply(TSDATA* args, const Func& func, Args... a) {
-                    return toTSDATA(func(a...));
-                }
+				static void applyVoid(TSDATA* args, const Func& func, Args... a) {
+					typedef function_traits<Func> f_t;
+					typedef typename f_t::template ArgAt<i> Arg;
 
-                static void applyVoid(TSDATA* args, const Func& func, Args... a) {
-                    func(a...);
-                }
-            };
+					ArgsFlattener < i + 1, N, Func, Args..., Arg >::applyVoid(args, func, a..., fromTSDATA<Arg>(args[i]));
+				}
+			};
 
-            template<typename T, typename std::enable_if<std::is_same<bool, T>::value, T>::type* = nullptr>
-            static T fromTSDATA(TSDATA x){
-                return (T)x.Int;
-            }
+			template<size_t N, typename Func, typename ...Args>
+			struct ArgsFlattener<N, N, Func, Args...> {
+				static TSDATA apply(TSDATA* args, const Func& func, Args... a) {
+					return toTSDATA(func(a...));
+				}
 
-            template<typename T, typename std::enable_if<std::is_integral<T>::value, T>::type* = nullptr>
-            static T fromTSDATA(TSDATA x){
-                return (T)x.Int;
-            }
+				static void applyVoid(TSDATA* args, const Func& func, Args... a) {
+					func(a...);
+				}
+			};
 
-            template<typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
-            static T fromTSDATA(TSDATA x){
-                return (T)x.Real;
-            }
+			template<typename T, typename std::enable_if<std::is_same<bool, T>::value, T>::type* = nullptr>
+			static T fromTSDATA(TSDATA x) {
+				return (T)x.Int;
+			}
 
-            template<typename T, typename std::enable_if<std::is_pointer<T>::value, T>::type* = nullptr>
-            static T fromTSDATA(TSDATA x){
-                return (T)x.Ref;
-            }
+			template<typename T, typename std::enable_if<std::is_integral<T>::value, T>::type* = nullptr>
+			static T fromTSDATA(TSDATA x) {
+				return (T)x.Int;
+			}
 
-            template<typename T, typename std::enable_if<std::is_class<T>::value, T>::type* = nullptr>
-            static T fromTSDATA(TSDATA x){
-                return *((T*)x.Ref);
-            }
+			template<typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
+			static T fromTSDATA(TSDATA x) {
+				return (T)x.Real;
+			}
 
-            template<typename T, typename std::enable_if<std::is_same<void, T>::value, T>::type* = nullptr>
-            static TSDATA toTSDATA(void){
-                return TSDATA{.Int = 0};
-            }
+			template<typename T, typename std::enable_if<std::is_pointer<T>::value, T>::type* = nullptr>
+			static T fromTSDATA(TSDATA x) {
+				return (T)x.Ref;
+			}
 
-            template<typename T, typename std::enable_if<std::is_same<bool, T>::value, T>::type* = nullptr>
-            static TSDATA toTSDATA(T x){
-                return TSDATA{.Int = x};
-            }
+			template<typename T, typename std::enable_if<std::is_class<T>::value, T>::type* = nullptr>
+			static T fromTSDATA(TSDATA x) {
+				return *((T*)x.Ref);
+			}
 
-            template<typename T, typename std::enable_if<std::is_integral<T>::value, T>::type* = nullptr>
-            static TSDATA toTSDATA(T x){
-                return TSDATA{.Int = x};
-            }
+			template<typename T, typename std::enable_if<std::is_same<void, T>::value, T>::type* = nullptr>
+			static TSDATA toTSDATA(void) {
+				return TSDATA {.Int = 0};
+			}
 
-            template<typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
-            static TSDATA toTSDATA(T x){
-                return TSDATA{.Real = x};
-            }
+			template<typename T, typename std::enable_if<std::is_same<bool, T>::value, T>::type* = nullptr>
+			static TSDATA toTSDATA(T x) {
+				return TSDATA {.Int = x};
+			}
 
-            template<typename T, typename std::enable_if<std::is_pointer<T>::value, T>::type* = nullptr>
-            static TSDATA toTSDATA(T x){
-                return TSDATA{.Ref = x};
-            }
+			template<typename T, typename std::enable_if<std::is_integral<T>::value, T>::type* = nullptr>
+			static TSDATA toTSDATA(T x) {
+				return TSDATA {.Int = x};
+			}
 
-            template<typename T, typename... Args>
-            static T* _constructor(Args... args){
-                return new T(args...);
-            }
+			template<typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
+			static TSDATA toTSDATA(T x) {
+				return TSDATA {.Real = x};
+			}
 
-            template<typename T>
-            static void _destructor(T* obj){
-                delete obj;
-            }
-        };
-    }
+			template<typename T, typename std::enable_if<std::is_pointer<T>::value, T>::type* = nullptr>
+			static TSDATA toTSDATA(T x) {
+				return TSDATA {.Ref = x};
+			}
+
+			template<typename T, typename... Args>
+			static T* _constructor(Args... args) {
+				return new T(args...);
+			}
+
+			template<typename T>
+			static void _destructor(T* obj) {
+				delete obj;
+			}
+		};
+	}
 }
 
 #endif /* defined(__TIMScript__FunctionBuilder__) */

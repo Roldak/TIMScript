@@ -11,125 +11,125 @@
 #include "CastNode.h"
 #include "Scope.h"
 
-namespace ts{
-    namespace nodes{
-        
-        // THROW NODE
+namespace ts {
+	namespace nodes {
 
-        void ThrowNode::semanticTraverse(){
-            _content->semanticTraverse();
+		// THROW NODE
 
-            if(!type::getIf<type::ClassType*>(_content->type())){
-                throw exception::InvalidThrowValue(_content, _content->type());
-            }
+		void ThrowNode::semanticTraverse() {
+			_content->semanticTraverse();
 
-            _cachedType=type::BasicType::Void;
-        }
-    
-        void ThrowNode::pushBytecode(std::vector<TSINSTR>& program){
-            _content->pushBytecode(program);
-            program.push_back(THROW);
-        }
-        
-        std::string ThrowNode::toString(){
-            return "throw "+_content->toString();
-        }
+			if (!type::getIf<type::ClassType*>(_content->type())) {
+				throw exception::InvalidThrowValue(_content, _content->type());
+			}
 
-        // TRY CATCH NODE
+			_cachedType = type::BasicType::Void;
+		}
 
-        TryCatchNode::TryCatchNode(size_t pos, size_t length, AbstractNode* tryNode)
-            : AbstractNode(pos, length), _tryNode(tryNode), _beginTryNodeIP(0), _endTryNodeIP(0) {}
+		void ThrowNode::pushBytecode(std::vector<TSINSTR>& program) {
+			_content->pushBytecode(program);
+			program.push_back(THROW);
+		}
 
-        TryCatchNode::~TryCatchNode(){
-            delete _tryNode;
+		std::string ThrowNode::toString() {
+			return "throw " + _content->toString();
+		}
 
-            for(auto& n : _catchNodes){
-                delete n.second;
-            }
-        }
+		// TRY CATCH NODE
 
-        void TryCatchNode::semanticTraverse(){
-            _tryNode->semanticTraverse();
-            _cachedType=_tryNode->type();
+		TryCatchNode::TryCatchNode(size_t pos, size_t length, AbstractNode* tryNode)
+			: AbstractNode(pos, length), _tryNode(tryNode), _beginTryNodeIP(0), _endTryNodeIP(0) {}
 
-            for(std::pair<cmplr::Variable*, AbstractNode*>& n : _catchNodes){
-                if(!type::getIf<type::ClassType*>(n.first->type())){
-                    throw exception::InvalidOperandBinaryIs(n.second, n.first->type(), "Instance", "right");
-                }
+		TryCatchNode::~TryCatchNode() {
+			delete _tryNode;
 
-                n.second->semanticTraverse();
-                if(!n.second->type()->equals(_cachedType)){
-                    n.second=new CastNode(pos(), len(), n.second, _cachedType);
-                    n.second->semanticTraverse();
-                }
-            }
-        }
+			for (auto& n : _catchNodes) {
+				delete n.second;
+			}
+		}
 
-        void TryCatchNode::pushBytecode(std::vector<TSINSTR>& program){
-            _beginTryNodeIP=program.size();
-            _tryNode->pushBytecode(program);
-            _endTryNodeIP=program.size();
+		void TryCatchNode::semanticTraverse() {
+			_tryNode->semanticTraverse();
+			_cachedType = _tryNode->type();
 
-            _catchEntryPoints.clear();
-            std::vector<size_t> gotoPositions;
+			for (std::pair<cmplr::Variable*, AbstractNode*>& n : _catchNodes) {
+				if (!type::getIf<type::ClassType*>(n.first->type())) {
+					throw exception::InvalidOperandBinaryIs(n.second, n.first->type(), "Instance", "right");
+				}
 
-            program.push_back(GOTO);
-            gotoPositions.push_back(program.size());
-            program.push_back(0);
+				n.second->semanticTraverse();
+				if (!n.second->type()->equals(_cachedType)) {
+					n.second = new CastNode(pos(), len(), n.second, _cachedType);
+					n.second->semanticTraverse();
+				}
+			}
+		}
 
-            for(std::pair<cmplr::Variable*, AbstractNode*>& n : _catchNodes){
-                _catchEntryPoints.push_back(program.size());
-                n.second->pushBytecode(program);
-                program.push_back(GOTO);
-                gotoPositions.push_back(program.size());
-                program.push_back(0);
-            }
+		void TryCatchNode::pushBytecode(std::vector<TSINSTR>& program) {
+			_beginTryNodeIP = program.size();
+			_tryNode->pushBytecode(program);
+			_endTryNodeIP = program.size();
 
-            size_t here=program.size();
-            for(size_t pos : gotoPositions){
-                program[pos]=here;
-            }
-        }
+			_catchEntryPoints.clear();
+			std::vector<size_t> gotoPositions;
 
-        std::string TryCatchNode::toString(){
-            return "try "+_tryNode->toString();
-        }
-        
-        // EXCEPTION TABLE NODE
+			program.push_back(GOTO);
+			gotoPositions.push_back(program.size());
+			program.push_back(0);
 
-        ExTableNode::~ExTableNode(){
+			for (std::pair<cmplr::Variable*, AbstractNode*>& n : _catchNodes) {
+				_catchEntryPoints.push_back(program.size());
+				n.second->pushBytecode(program);
+				program.push_back(GOTO);
+				gotoPositions.push_back(program.size());
+				program.push_back(0);
+			}
 
-        }
+			size_t here = program.size();
+			for (size_t pos : gotoPositions) {
+				program[pos] = here;
+			}
+		}
 
-        void ExTableNode::semanticTraverse(){
+		std::string TryCatchNode::toString() {
+			return "try " + _tryNode->toString();
+		}
 
-        }
+		// EXCEPTION TABLE NODE
 
-        void ExTableNode::pushBytecode(std::vector<TSINSTR>& program){
-            program.push_back(MK_EX_TABLE);
-            program.push_back(_tryCatchNodes.size());
+		ExTableNode::~ExTableNode() {
 
-            for(TryCatchNode* trycatch : _tryCatchNodes){
-                program.push_back(trycatch->getTryBlockIPStart());
-                program.push_back(trycatch->getTryBlockIPEnd());
+		}
 
-                const std::vector<std::pair<cmplr::Variable*, AbstractNode*>>& catchNodes=trycatch->getCatchNodes();
-                const std::vector<size_t>& catchNodesEntryPoints=trycatch->getCatchEntryPoints();
+		void ExTableNode::semanticTraverse() {
 
-                program.push_back(catchNodes.size());
+		}
 
-                size_t i=0;
-                for(const std::pair<cmplr::Variable*, AbstractNode*>& pair : catchNodes){
-                    program.push_back(pair.first->index());
-                    program.push_back(((type::ClassType*)pair.first->type())->getClassDefIndex());
-                    program.push_back(catchNodesEntryPoints[i++]);
-                }
+		void ExTableNode::pushBytecode(std::vector<TSINSTR>& program) {
+			program.push_back(MK_EX_TABLE);
+			program.push_back(_tryCatchNodes.size());
 
-            }
-        }
+			for (TryCatchNode* trycatch : _tryCatchNodes) {
+				program.push_back(trycatch->getTryBlockIPStart());
+				program.push_back(trycatch->getTryBlockIPEnd());
 
-        std::string ExTableNode::toString(){
-            return "";
-        }
-    }
+				const std::vector<std::pair<cmplr::Variable*, AbstractNode*>>& catchNodes = trycatch->getCatchNodes();
+				const std::vector<size_t>& catchNodesEntryPoints = trycatch->getCatchEntryPoints();
+
+				program.push_back(catchNodes.size());
+
+				size_t i = 0;
+				for (const std::pair<cmplr::Variable*, AbstractNode*>& pair : catchNodes) {
+					program.push_back(pair.first->index());
+					program.push_back(((type::ClassType*)pair.first->type())->getClassDefIndex());
+					program.push_back(catchNodesEntryPoints[i++]);
+				}
+
+			}
+		}
+
+		std::string ExTableNode::toString() {
+			return "";
+		}
+	}
 }

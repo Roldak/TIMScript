@@ -12,78 +12,88 @@
 #include <iostream>
 #include "AbstractNode.h"
 
-namespace ts{
-    namespace cmplr{
-        class Variable;
-    }
+namespace ts {
+	namespace cmplr {
+		class Variable;
+	}
 
-    namespace nodes{
-        
-        class ThrowNode : public AbstractNode{
-        public:
-            
-            ThrowNode(size_t pos, size_t length, AbstractNode* node) : AbstractNode(pos, length), _content(node) {}
-            virtual ~ThrowNode(){delete _content;}
-            
-            virtual void semanticTraverse();
-            
-            virtual void pushBytecode(std::vector<TSINSTR>& program);
-            virtual std::string toString();
-        private:
-            
-            AbstractNode* _content;
-        };
+	namespace nodes {
 
-        class TryCatchNode : public AbstractNode{
-        public:
+		class ThrowNode : public AbstractNode {
+		public:
 
-            TryCatchNode(size_t pos, size_t length, AbstractNode* tryNode);
-            virtual ~TryCatchNode();
+			ThrowNode(size_t pos, size_t length, AbstractNode* node) : AbstractNode(pos, length), _content(node) {}
+			virtual ~ThrowNode() {
+				delete _content;
+			}
 
-            inline void addCatchNode(cmplr::Variable* exType, AbstractNode* catchNode){
-                _catchNodes.push_back(std::pair<cmplr::Variable*, AbstractNode*>(exType, catchNode));
-            }
+			virtual void semanticTraverse();
 
-            inline const std::vector<size_t>& getCatchEntryPoints(){return _catchEntryPoints;}
-            inline size_t getTryBlockIPStart(){return _beginTryNodeIP;}
-            inline size_t getTryBlockIPEnd(){return _endTryNodeIP;}
+			virtual void pushBytecode(std::vector<TSINSTR>& program);
+			virtual std::string toString();
+		private:
 
-            inline std::vector<std::pair<cmplr::Variable*, AbstractNode*>>& getCatchNodes(){return _catchNodes;}
+			AbstractNode* _content;
+		};
 
-            virtual void semanticTraverse();
+		class TryCatchNode : public AbstractNode {
+		public:
 
-            virtual void pushBytecode(std::vector<TSINSTR>& program);
-            virtual std::string toString();
+			TryCatchNode(size_t pos, size_t length, AbstractNode* tryNode);
+			virtual ~TryCatchNode();
 
-        private:
+			inline void addCatchNode(cmplr::Variable* exType, AbstractNode* catchNode) {
+				_catchNodes.push_back(std::pair<cmplr::Variable*, AbstractNode*>(exType, catchNode));
+			}
 
-            AbstractNode* _tryNode;
-            std::vector<std::pair<cmplr::Variable*, AbstractNode*>> _catchNodes;
+			inline const std::vector<size_t>& getCatchEntryPoints() {
+				return _catchEntryPoints;
+			}
+			inline size_t getTryBlockIPStart() {
+				return _beginTryNodeIP;
+			}
+			inline size_t getTryBlockIPEnd() {
+				return _endTryNodeIP;
+			}
 
-            std::vector<size_t> _catchEntryPoints;
-            size_t _beginTryNodeIP, _endTryNodeIP;
-        };
-        
-        class ExTableNode : public AbstractNode{
-        public:
+			inline std::vector<std::pair<cmplr::Variable*, AbstractNode*>>& getCatchNodes() {
+				return _catchNodes;
+			}
 
-            ExTableNode(size_t pos, size_t length) : AbstractNode(pos, length) {}
-            virtual ~ExTableNode();
+			virtual void semanticTraverse();
 
-            inline void addTryCatchNode(TryCatchNode* tryCatchNode){
-                _tryCatchNodes.push_back(tryCatchNode);
-            }
+			virtual void pushBytecode(std::vector<TSINSTR>& program);
+			virtual std::string toString();
 
-            virtual void semanticTraverse();
+		private:
 
-            virtual void pushBytecode(std::vector<TSINSTR>& program);
-            virtual std::string toString();
-        private:
+			AbstractNode* _tryNode;
+			std::vector<std::pair<cmplr::Variable*, AbstractNode*>> _catchNodes;
 
-            std::vector<TryCatchNode*> _tryCatchNodes;
+			std::vector<size_t> _catchEntryPoints;
+			size_t _beginTryNodeIP, _endTryNodeIP;
+		};
 
-        };
-    }
+		class ExTableNode : public AbstractNode {
+		public:
+
+			ExTableNode(size_t pos, size_t length) : AbstractNode(pos, length) {}
+			virtual ~ExTableNode();
+
+			inline void addTryCatchNode(TryCatchNode* tryCatchNode) {
+				_tryCatchNodes.push_back(tryCatchNode);
+			}
+
+			virtual void semanticTraverse();
+
+			virtual void pushBytecode(std::vector<TSINSTR>& program);
+			virtual std::string toString();
+		private:
+
+			std::vector<TryCatchNode*> _tryCatchNodes;
+
+		};
+	}
 }
 
 #endif /* defined(__TIMScript__ExceptionNodes__) */

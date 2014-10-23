@@ -16,55 +16,57 @@
 
 #include "Object.h"
 
-namespace ts{
-    class ExecutionContext;
-    
-    class GarbageCollector{
-    public:
-        GarbageCollector(size_t maxSize, data_Array* roots, ExecutionContext* ctx);
-        ~GarbageCollector();
-        
-        void trace(objects::Object* item);
-        void store(objects::Object* item);
-        void fastStore(objects::Object* item);
-        void makeTemp(objects::Object* item);
-        void forceCollection();
-        
-        void reset(data_Array* roots, ExecutionContext* ctx);
-        
-        void setBackupGC(GarbageCollector* gc){_backup=gc;}
+namespace ts {
+	class ExecutionContext;
 
-        bool contains(TSREF ref);
-        size_t getCurrentSize();
-        size_t getMaxSize();
-        
-    private:
+	class GarbageCollector {
+	public:
+		GarbageCollector(size_t maxSize, data_Array* roots, ExecutionContext* ctx);
+		~GarbageCollector();
 
-        void emplaceTemporaryItem(objects::Object* item);
-        void performCollection();
-        void markStep();
-        void sweepStep();
-        
-        size_t _maxSize;
-        size_t _currentSize;
-        std::vector<objects::Object*> _items;
-        std::vector<objects::Object*> _temporaries;
-        data_Array* _roots;
-        ExecutionContext* _ctx;
-        
-        GarbageCollector* _backup;
-    };
-    
-    
-    inline void GarbageCollector::fastStore(objects::Object* item){
-        // the object is not temporary anymore
-        
-        item->unsetTemporary();
-        
-        // make the slot available
-        
-        _temporaries[item->getIndex()]=NULL;
-    }
+		void trace(objects::Object* item);
+		void store(objects::Object* item);
+		void fastStore(objects::Object* item);
+		void makeTemp(objects::Object* item);
+		void forceCollection();
+
+		void reset(data_Array* roots, ExecutionContext* ctx);
+
+		void setBackupGC(GarbageCollector* gc) {
+			_backup = gc;
+		}
+
+		bool contains(TSREF ref);
+		size_t getCurrentSize();
+		size_t getMaxSize();
+
+	private:
+
+		void emplaceTemporaryItem(objects::Object* item);
+		void performCollection();
+		void markStep();
+		void sweepStep();
+
+		size_t _maxSize;
+		size_t _currentSize;
+		std::vector<objects::Object*> _items;
+		std::vector<objects::Object*> _temporaries;
+		data_Array* _roots;
+		ExecutionContext* _ctx;
+
+		GarbageCollector* _backup;
+	};
+
+
+	inline void GarbageCollector::fastStore(objects::Object* item) {
+		// the object is not temporary anymore
+
+		item->unsetTemporary();
+
+		// make the slot available
+
+		_temporaries[item->getIndex()] = NULL;
+	}
 }
 
 #endif /* defined(__TIMScript__GC__) */

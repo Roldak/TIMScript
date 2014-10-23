@@ -10,108 +10,107 @@
 #include "Scope.h"
 #include "FunctionNode.h"
 
-namespace ts{
-    namespace nodes{
+namespace ts {
+	namespace nodes {
 
-        DEBUG_TYPE debugTypeFromVarType(type::Type* t){
-            if(t==type::BasicType::Bool)
-                return T_BOOL;
-            else if(t==type::BasicType::Int)
-                return T_INT;
-            else if(t==type::BasicType::Real)
-                return T_REAL;
-            else
-                return T_REF;
-        }
+		DEBUG_TYPE debugTypeFromVarType(type::Type* t) {
+			if (t == type::BasicType::Bool)
+				return T_BOOL;
+			else if (t == type::BasicType::Int)
+				return T_INT;
+			else if (t == type::BasicType::Real)
+				return T_REAL;
+			else
+				return T_REF;
+		}
 
-        FunctionDebugInfoNode::FunctionDebugInfoNode(const std::vector<std::pair<std::string, cmplr::Variable*>>& vars)
-            : AbstractNode(0, 0),  _vars(vars)
-        {
+		FunctionDebugInfoNode::FunctionDebugInfoNode(const std::vector<std::pair<std::string, cmplr::Variable*>>& vars)
+			: AbstractNode(0, 0),  _vars(vars) {
 
-        }
+		}
 
-        void FunctionDebugInfoNode::semanticTraverse(){}
-        
-        void FunctionDebugInfoNode::pushBytecode(std::vector<TSINSTR>& program){
+		void FunctionDebugInfoNode::semanticTraverse() {}
 
-            for(size_t i=0; i<_vars.size(); ++i){
+		void FunctionDebugInfoNode::pushBytecode(std::vector<TSINSTR>& program) {
 
-                // push variable's index
+			for (size_t i = 0; i < _vars.size(); ++i) {
 
-                program.push_back(PUSH_I);
-                program.push_back(_vars[i].second->index());
+				// push variable's index
 
-                // push variable's name
+				program.push_back(PUSH_I);
+				program.push_back(_vars[i].second->index());
 
-                program.push_back(MK_STRING);
+				// push variable's name
 
-                std::string name=_vars[i].first;
+				program.push_back(MK_STRING);
 
-                program.push_back(name.size());
+				std::string name = _vars[i].first;
 
-                for(size_t j=0; j<name.size(); ++j){
-                    program.push_back(name[j]);
-                }
+				program.push_back(name.size());
 
-                // push variable's debug type
+				for (size_t j = 0; j < name.size(); ++j) {
+					program.push_back(name[j]);
+				}
 
-                program.push_back(PUSH_I);
-                program.push_back(debugTypeFromVarType(_vars[i].second->type()));
-            }
+				// push variable's debug type
 
-            program.push_back(MK_DBG_INFO);
-            program.push_back(_vars.size());
-        }
+				program.push_back(PUSH_I);
+				program.push_back(debugTypeFromVarType(_vars[i].second->type()));
+			}
 
-        std::string FunctionDebugInfoNode::toString(){
-            return "";
-        }
+			program.push_back(MK_DBG_INFO);
+			program.push_back(_vars.size());
+		}
 
-        // CLASS DEBUG INFOS
+		std::string FunctionDebugInfoNode::toString() {
+			return "";
+		}
 
-        ClassDebugInfoNode::ClassDebugInfoNode(ClassNode* clss) : AbstractNode(0, 0), _class(clss){
+		// CLASS DEBUG INFOS
 
-        }
+		ClassDebugInfoNode::ClassDebugInfoNode(ClassNode* clss) : AbstractNode(0, 0), _class(clss) {
 
-        void ClassDebugInfoNode::semanticTraverse() {}
+		}
 
-        void ClassDebugInfoNode::pushBytecode(std::vector<TSINSTR> &program){
+		void ClassDebugInfoNode::semanticTraverse() {}
 
-            const std::vector<Argument*>& attrs(_class->getAttributes());
+		void ClassDebugInfoNode::pushBytecode(std::vector<TSINSTR> &program) {
 
-            for(size_t i=0; i<attrs.size(); ++i){
+			const std::vector<Argument*>& attrs(_class->getAttributes());
 
-                // push variable's index
+			for (size_t i = 0; i < attrs.size(); ++i) {
 
-                program.push_back(PUSH_I);
-                program.push_back(i);
+				// push variable's index
 
-                // push variable's name
+				program.push_back(PUSH_I);
+				program.push_back(i);
 
-                program.push_back(MK_STRING);
+				// push variable's name
 
-                std::string name=attrs[i]->name();
+				program.push_back(MK_STRING);
 
-                program.push_back(name.size());
+				std::string name = attrs[i]->name();
 
-                for(size_t j=0; j<name.size(); ++j){
-                    program.push_back(name[j]);
-                }
+				program.push_back(name.size());
 
-                // push variable's debug type
+				for (size_t j = 0; j < name.size(); ++j) {
+					program.push_back(name[j]);
+				}
 
-                program.push_back(PUSH_I);
-                program.push_back(debugTypeFromVarType(attrs[i]->type()));
-            }
+				// push variable's debug type
 
-            program.push_back(MK_DBG_INFO);
-            program.push_back(attrs.size());
-        }
+				program.push_back(PUSH_I);
+				program.push_back(debugTypeFromVarType(attrs[i]->type()));
+			}
 
-        std::string ClassDebugInfoNode::toString(){
-            return "";
-        }
+			program.push_back(MK_DBG_INFO);
+			program.push_back(attrs.size());
+		}
 
-        
-    }
+		std::string ClassDebugInfoNode::toString() {
+			return "";
+		}
+
+
+	}
 }

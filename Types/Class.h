@@ -15,52 +15,66 @@
 #include "Object.h"
 #include "DebugInfos.h"
 
-namespace ts{
-    namespace objects{
-        
-        class Class : public Object{
-        public:
-            Class(size_t nb, Class** superClass, TSDATA* vt, TSDATA** it,
-                  std::vector<size_t> vec, size_t destr, DebugInfos** infos, const std::string& name);
-            virtual ~Class(){delete _vtable;}
-            
-            inline size_t numberOfAttributes(){return _attrNumber;}
-            inline TSDATA getVirtual(size_t index){return _vtable[index];}
-            inline TSDATA getImplementation(size_t interfaceID, size_t index){
-                return _itable[interfaceID][index];
-            }
-            
-            TSDATA newInstance();
-            void deleteInstance(objects::Instance* instance, ExecutionContext* ctx);
-            
-            inline const std::string& name(){return _name;}
-            inline Class* superClass(){return _superClass ? *_superClass : NULL;}
+namespace ts {
+	namespace objects {
 
-            inline DebugInfos* getDebugInfos(){return _debugInfos ? *_debugInfos : NULL;}
+		class Class : public Object {
+		public:
+			Class(size_t nb, Class** superClass, TSDATA* vt, TSDATA** it,
+				  std::vector<size_t> vec, size_t destr, DebugInfos** infos, const std::string& name);
+			virtual ~Class() {
+				delete _vtable;
+			}
 
-            // GC
-            
-            void pushRefsInstance(objects::Instance* instance, std::vector<Object*>& objs);
-            
-            virtual void gcPushRefs(std::vector<Object*>& objs);
-            virtual const size_t size(){return sizeof(Class);}
-            
-        private:
-            
-            size_t _attrNumber;
-            TSDATA* _vtable;
-            TSDATA** _itable;
-            std::vector<size_t> _refsAmongAttrs;
-            size_t _destrIndex;
+			inline size_t numberOfAttributes() {
+				return _attrNumber;
+			}
+			inline TSDATA getVirtual(size_t index) {
+				return _vtable[index];
+			}
+			inline TSDATA getImplementation(size_t interfaceID, size_t index) {
+				return _itable[interfaceID][index];
+			}
 
-            DebugInfos** _debugInfos;
+			TSDATA newInstance();
+			void deleteInstance(objects::Instance* instance, ExecutionContext* ctx);
 
-            const std::string _name;
+			inline const std::string& name() {
+				return _name;
+			}
+			inline Class* superClass() {
+				return _superClass ? *_superClass : NULL;
+			}
 
-            Class** _superClass;
-        };
-        
-    }
+			inline DebugInfos* getDebugInfos() {
+				return _debugInfos ? *_debugInfos : NULL;
+			}
+
+			// GC
+
+			void pushRefsInstance(objects::Instance* instance, std::vector<Object*>& objs);
+
+			virtual void gcPushRefs(std::vector<Object*>& objs);
+			virtual const size_t size() {
+				return sizeof(Class);
+			}
+
+		private:
+
+			size_t _attrNumber;
+			TSDATA* _vtable;
+			TSDATA** _itable;
+			std::vector<size_t> _refsAmongAttrs;
+			size_t _destrIndex;
+
+			DebugInfos** _debugInfos;
+
+			const std::string _name;
+
+			Class** _superClass;
+		};
+
+	}
 }
 
 #endif /* defined(__TIMScript__Class__) */

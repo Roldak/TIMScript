@@ -14,10 +14,10 @@
 #include "Instance.h"
 
 namespace ts {
-    namespace tstd{
-        
-        void importClock(cmplr::Compiler& cmp);
-    }
+	namespace tstd {
+
+		void importClock(cmplr::Compiler& cmp);
+	}
 }
 
 #endif /* defined(__TIMScript__TSTDClock__) */

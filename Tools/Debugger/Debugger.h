@@ -11,16 +11,16 @@
 
 #include <iostream>
 
-namespace ts{
-    namespace tools{
-        
-        class Debugger{
-            
-            
-            
-        };
-        
-    }
+namespace ts {
+	namespace tools {
+
+		class Debugger {
+
+
+
+		};
+
+	}
 }
 
 #endif /* defined(__TIMScript__Debugger__) */

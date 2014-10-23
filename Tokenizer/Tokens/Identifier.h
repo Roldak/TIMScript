@@ -14,23 +14,29 @@
 #include "AbstractToken.h"
 
 namespace ts {
-    namespace tok{
-        
-        class Identifier : public AbstractToken{
-        public:
-            Identifier(size_t pos, size_t len, std::string n) : AbstractToken(pos, len), _name(n) {}
-            virtual ~Identifier() {}
-            
-            inline std::string name(){return _name;}
-            
-            virtual TOKEN_TYPE getType(){return TK_IDENTIFIER;}
-            virtual std::string toString(){return _name;}
-            
-        private:
-            const std::string _name;
-        };
-        
-    }
+	namespace tok {
+
+		class Identifier : public AbstractToken {
+		public:
+			Identifier(size_t pos, size_t len, std::string n) : AbstractToken(pos, len), _name(n) {}
+			virtual ~Identifier() {}
+
+			inline std::string name() {
+				return _name;
+			}
+
+			virtual TOKEN_TYPE getType() {
+				return TK_IDENTIFIER;
+			}
+			virtual std::string toString() {
+				return _name;
+			}
+
+		private:
+			const std::string _name;
+		};
+
+	}
 }
 
 #endif /* defined(__TimScript_5__Identifier__) */

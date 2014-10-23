@@ -15,11 +15,11 @@
 #include "Instance.h"
 
 namespace ts {
-    namespace tstd{
-        
-        void importThread(cmplr::Compiler& cmp);
-        
-    }
+	namespace tstd {
+
+		void importThread(cmplr::Compiler& cmp);
+
+	}
 }
 
 

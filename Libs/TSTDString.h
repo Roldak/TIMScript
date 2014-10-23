@@ -15,10 +15,10 @@
 
 
 namespace ts {
-    namespace tstd{
-        
-        void importString(cmplr::Compiler& cmp);
-    }
+	namespace tstd {
+
+		void importString(cmplr::Compiler& cmp);
+	}
 }
 
 
