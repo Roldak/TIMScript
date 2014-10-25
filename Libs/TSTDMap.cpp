@@ -107,11 +107,12 @@ namespace ts {
 			auto stringClass = cmp.getSymbolLocation("String");
 			size_t toStringOffset = objectClass->getDefinitionIndex("toString");
 
-			cmp.setClassData(mapClass, "toString", FunctionBuilder::Make([stringClass, toStringOffset](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(mapClass, "toString", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				std::string* c = new std::string("{");
 				auto& map(((objects::MapInstance*)args[0].Instance->getAttr(0).Ref)->map);
 
 				std::vector<TSDATA> toStringArgs(1);
+
 				for (auto it = map.begin(), end = map.end(); it != end; ++it) {
 					toStringArgs[0] = (*it).first;
 					TSDATA tsString = ctx->callVirtual(toStringOffset, toStringArgs);
@@ -127,6 +128,7 @@ namespace ts {
 
 					c->append(", ");
 				}
+
 				if (c->size() > 2)
 					c->resize(c->size() - 2);
 

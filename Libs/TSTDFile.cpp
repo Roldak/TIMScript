@@ -52,7 +52,7 @@ namespace ts {
 
 			auto stringClass = cmp.getSymbolLocation("String");
 			auto stringConstructor = cmp.getSymbolLocation("String._new_");
-			cmp.setClassData(FileClass, "readAll", FunctionBuilder::Make([stringClass, stringConstructor](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(FileClass, "readAll", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 
 				std::fstream* file = (std::fstream*)args[0].Instance->getAttr(0).Ref;
 				std::string* content = new std::string;
@@ -65,7 +65,7 @@ namespace ts {
 
 			}, "(File)->String"));
 
-			cmp.setClassData(FileClass, "readLine", FunctionBuilder::Make([stringClass, stringConstructor](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(FileClass, "readLine", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 
 				std::fstream* file = (std::fstream*)args[0].Instance->getAttr(0).Ref;
 				std::string* content = new std::string;

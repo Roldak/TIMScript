@@ -27,14 +27,14 @@ namespace ts {
 				return TSDATA {.Int = (args[0].Ref == args[1].Ref)};
 			}, "(Object, Object)->bool"));
 
-			cmp.setClassData(object, "toString", FunctionBuilder::Make([stringIndex](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(object, "toString", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				TSDATA str = ctx->newInstance(stringIndex);
 				str.Instance->setAttr(0, TSDATA {.Ref = new std::string("<" + args[0].Instance->getClass()->name() + " at " + T_toString(args[0].Ref) + ">")});
 				return str;
 			}, "(Object)->String"));
 
 
-			cmp.setClassData(object, "typeName", FunctionBuilder::Make([stringIndex](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(object, "typeName", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				TSDATA str = ctx->newInstance(stringIndex);
 				str.Instance->setAttr(0, TSDATA {.Ref = new std::string(args[0].Instance->getClass()->name())});
 				return str;
@@ -61,20 +61,20 @@ namespace ts {
 				return TSDATA {.Int = false};
 			}, "(Int, Object)->bool"));
 
-			cmp.setClassData(Int, "_+_", FunctionBuilder::Make([IntLocation](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(Int, "_+_", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				TSDATA toRet = ctx->newInstance(IntLocation);
 				toRet.Instance->setAttr(0, TSDATA {.Int = args[0].Instance->getAttr(0).Int + args[1].Instance->getAttr(0).Int});
 				return toRet;
 			}, "(Int, Int)->Int"));
 
-			cmp.setClassData(Int, "valueOf", FunctionBuilder::Make([stringIndex](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(Int, "valueOf", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				if (args[0].Instance->getClass() == ctx->cPool[stringIndex.index].Ref)
 					return TSDATA {.Int = String_toT<TSINT>(*((std::string*)args[0].Instance->getAttr(0).Ref))};
 
 				return TSDATA {.Int = 0};
 			}, "(String)->int"));
 
-			cmp.setClassData(Int, "toString", FunctionBuilder::Make([stringIndex](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(Int, "toString", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				TSDATA str = ctx->newInstance(stringIndex);
 				str.Instance->setAttr(0, TSDATA {.Ref = new std::string(T_toString(args[0].Instance->getAttr(0).Int))});
 				return str;
@@ -99,14 +99,14 @@ namespace ts {
 				return TSDATA {.Int = false};
 			}, "(Real, Object)->bool"));
 
-			cmp.setClassData(Real, "valueOf", FunctionBuilder::Make([stringIndex](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(Real, "valueOf", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				if (args[0].Instance->getClass() == ctx->cPool[stringIndex.index].Ref)
 					return TSDATA {.Real = String_toT<TSREAL>(*((std::string*)args[0].Instance->getAttr(0).Ref))};
 
 				return TSDATA {.Real = 0};
 			}, "(String)->real"));
 
-			cmp.setClassData(Real, "toString", FunctionBuilder::Make([stringIndex](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(Real, "toString", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				TSDATA str = ctx->newInstance(stringIndex);
 				str.Instance->setAttr(0, TSDATA {.Ref = new std::string(T_toString(args[0].Instance->getAttr(0).Real))});
 				return str;

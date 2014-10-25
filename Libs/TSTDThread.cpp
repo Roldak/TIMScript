@@ -151,12 +151,12 @@ namespace ts {
 			}, "(Future)->bool"));
 
 			auto futAwait = cmp.getSymbolLocation("Future.await");
-			auto objToString = cmp.getSymbolLocation("Object.toString");
+            auto objToString = objectclass->getDefinitionIndex("toString");
 
-			cmp.setClassData(future, "toString", FunctionBuilder::Make([futAwait, objToString](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(future, "toString", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				ctx->callNativeFunction(futAwait, {args[0]});
 				TSDATA value = args[0].Instance->getAttr(0);
-				return ctx->callFunction((objects::Function*)value.Instance->getVirtual(objToString.index).Ref, {value});
+                return ctx->callFunction((objects::Function*)value.Instance->getVirtual(objToString).Ref, {value});
 			}, "(Future)->String"));
 
 			// ASYNC
@@ -165,7 +165,7 @@ namespace ts {
 			auto newFuture = cmp.getSymbolLocation("Future._new_");
 			auto setFuture = cmp.getSymbolLocation("Future.__set");
 
-			cmp.setClassData(threadclass, "_async", FunctionBuilder::Make([futureLoc, newFuture, setFuture](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(threadclass, "_async", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 
 				objects::Function* f = (objects::Function*)args[0].Ref;
 
@@ -184,8 +184,7 @@ namespace ts {
 
 			}, "(()->Object)->Future"));
 
-			cmp.setClassData(threadclass, "_async_void",
-			FunctionBuilder::Make([futureLoc, newFuture, setFuture](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(threadclass, "_async_void", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 
 				objects::Function* f = (objects::Function*)args[0].Ref;
 
@@ -240,13 +239,13 @@ namespace ts {
 			auto mutexLockLoc = cmp.getSymbolLocation("Mutex.lock");
 			auto mutexUnlockLoc = cmp.getSymbolLocation("Mutex.unlock");
 
-			cmp.setClassData(lockClass, "_new_", FunctionBuilder::Make([mutexLockLoc](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(lockClass, "_new_", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				args[0].Instance->setAttr(0, args[1]);
 				ctx->callFunction(mutexLockLoc, {args[1]});
 				return args[0];
 			}, "(Lock, Mutex)->Lock"));
 
-			cmp.setClassData(lockClass, "delete", FunctionBuilder::Make([mutexUnlockLoc](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setClassData(lockClass, "delete", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				ctx->callFunction(mutexUnlockLoc, {args[0].Instance->getAttr(0)});
 				return TSDATA();
 			}, "(Lock)->void"));

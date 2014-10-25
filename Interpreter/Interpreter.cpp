@@ -83,7 +83,7 @@ namespace ts {
 		return FunctionCaller(this, (objects::Function*)args[0].Instance->getVirtual(index).Ref).call(args);
 	}
 
-	TSDATA ExecutionContext::callImplementation(const ImplementationLocation& loc, const std::vector<TSDATA> &args) {
+    TSDATA ExecutionContext::callImplementation(const ImplementationLocation& loc, const std::vector<TSDATA>& args) {
 		return FunctionCaller(this, (objects::Function*)args[0].Instance->getImplementation(loc.interfaceID, loc.index).Ref).call(args);
 	}
 
@@ -99,36 +99,17 @@ namespace ts {
 	FunctionCaller::FunctionCaller(ExecutionContext* ctx, const objects::Function* func)
 		: _ctx(ctx), _func(func), _nbCap(func->captures().size()) {
 
-		_o_csp = ctx->csp;
-		_ctx->csp = 0;
-
-		_o_proc = ctx->caller;
-
 		if (func->getNative())
 			return;
 
 		_n_proc = func->getProcPtr();
-
-		if (_o_proc) {
-			ctx->locals += _o_proc->numberOfLocals();
-			ctx->stack += _o_proc->stackSize();
-		}
 
 		for (size_t i = 0; i < _nbCap; ++i)
 			ctx->locals[i] = func->captures()[i];
 	}
 
 	FunctionCaller::~FunctionCaller() {
-		_ctx->caller = _o_proc;
-		_ctx->csp = _o_csp;
 
-		if (_func->getNative())
-			return;
-
-		if (_o_proc) {
-			_ctx->locals -= _o_proc->numberOfLocals();
-			_ctx->stack -= _o_proc->stackSize();
-		}
 	}
 
 	TSDATA FunctionCaller::call(const std::vector<TSDATA>& args) {
@@ -166,8 +147,24 @@ namespace ts {
 
 	AbstractDebugger* Interpreter::Debugger = NULL;
 
+    struct StateSaver{
+        StateSaver(ExecutionContext* c) : ctx(c), oldStack(ctx->stack), oldLocals(ctx->locals) {}
+        ~StateSaver(){
+            ctx->stack = oldStack;
+            ctx->locals = oldLocals;
+        }
+
+        ExecutionContext* ctx;
+        TSDATA* oldStack;
+        TSDATA* oldLocals;
+    };
+
 	template<bool USE_GC>
 	TSDATA Interpreter::exec(ExecutionContext* ctx, const Procedure* proc) {
+
+        // save the execution context's state
+
+        StateSaver _stateSaver(ctx);
 
 		// get the content of the execution context
 

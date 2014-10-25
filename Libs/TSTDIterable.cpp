@@ -35,7 +35,11 @@ namespace ts {
 			size_t nextFuncPos = iteratorClass->getDefinitionIndex("next");
 			size_t hasNextFuncPos = iteratorClass->getDefinitionIndex("hasNext");
 
-			cmp.setInterfaceData(iterableInterface, "forEach", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext * ctx, TSDATA * args) {
+            SymbolLocation stringClass = cmp.getSymbolLocation("String");
+            SymbolLocation string_new = cmp.getSymbolLocation("String._new_");
+            size_t toStringPos = objectClass->getDefinitionIndex("toString");
+
+            cmp.setInterfaceData(iterableInterface, "forEach", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				TSDATA it = ctx->callImplementation(iteratorFuncPos, {args[0]});
 				objects::Function* next = (objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
 				objects::Function* hasNext = (objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
@@ -60,7 +64,7 @@ namespace ts {
 
 			}, "(@Iterable, (Object)->void)->void"));
 
-			cmp.setInterfaceData(iterableInterface, "fold", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setInterfaceData(iterableInterface, "fold", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				TSDATA it = ctx->callImplementation(iteratorFuncPos, {args[0]});
 				objects::Function* next = (objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
 				objects::Function* hasNext = (objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
@@ -87,7 +91,7 @@ namespace ts {
 
 			}, "(@Iterable, Object, (Object, Object)->Object)->Object"));
 
-			cmp.setInterfaceData(iterableInterface, "exists", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setInterfaceData(iterableInterface, "exists", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				TSDATA it = ctx->callImplementation(iteratorFuncPos, {args[0]});
 				objects::Function* next = (objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
 				objects::Function* hasNext = (objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
@@ -115,7 +119,7 @@ namespace ts {
 				return ret;
 			}, "(@Iterable, (Object)->bool)->bool"));
 
-			cmp.setInterfaceData(iterableInterface, "count", FunctionBuilder::Make([iteratorFuncPos, nextFuncPos, hasNextFuncPos](ExecutionContext * ctx, TSDATA * args) {
+            cmp.setInterfaceData(iterableInterface, "count", FunctionBuilder::Make([=](ExecutionContext * ctx, TSDATA * args) {
 				TSDATA it = ctx->callImplementation(iteratorFuncPos, {args[0]});
 				objects::Function* next = (objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
 				objects::Function* hasNext = (objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
@@ -141,6 +145,51 @@ namespace ts {
 
 				return count;
 			}, "(@Iterable, (Object)->bool)->int"));
+
+            cmp.setInterfaceData(iterableInterface, "join", FunctionBuilder::Make([=](ExecutionContext* ctx, TSDATA* args){
+
+                TSDATA it = ctx->callImplementation(iteratorFuncPos, {args[0]});
+
+                objects::Function* next = (objects::Function*)it.Instance->getVirtual(nextFuncPos).Ref;
+                objects::Function* hasNext = (objects::Function*)it.Instance->getVirtual(hasNextFuncPos).Ref;
+                std::string* joiner = (std::string*)args[1].Instance->getAttr(0).Ref;
+
+                FunctionCaller nextCaller(ctx, next);
+                FunctionCaller hasNextCaller(ctx, hasNext);
+
+                std::vector<TSDATA> next_hasNext_Args = {it};
+                std::vector<TSDATA> toStringArg(1);
+
+                std::string* joined = new std::string();
+
+                bool atLeastOne = false;
+
+                while (hasNextCaller.call(next_hasNext_Args).Int) {
+                    atLeastOne = true;
+
+                    toStringArg[0] = nextCaller.call(next_hasNext_Args);
+
+                    TSDATA objStr = ctx->callVirtual(toStringPos, toStringArg);
+                    joined->append(*((std::string*)objStr.Instance->getAttr(0).Ref)).append(*joiner);
+
+                    ctx->gc->store(objStr.Instance);
+                    ctx->gc->store(toStringArg[0].Instance);
+                }
+
+                if(atLeastOne){
+                    joined->resize(joined->size() - joiner->size());
+                }
+
+                ctx->gc->store(it.Instance);
+
+                std::vector<TSDATA> strConstrArgs(2);
+                strConstrArgs[0] = ctx->newInstance(stringClass);
+                strConstrArgs[1].Ref = joined;
+
+                return ctx->callFunction(string_new, strConstrArgs);
+
+            }, "(@Iterable, String)->String"));
+
 		}
 	}
 }
